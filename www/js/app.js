@@ -34,6 +34,7 @@ function init() { //run everything in here only when device is ready
     startWalkBtn.addEventListener("click", getWalkDirections, false);
 
 }
+
 function removeExtAndUnderscore(filename) {
 
 	var removeExt=filename.substring(0,filename.indexOf('.gpx'));
@@ -54,12 +55,25 @@ function getWalkDirections() {
 		xhr.open('GET',requestUri, true);
 		xhr.send(null);  
 
-		xhr.onreadystatechange = function() {
-		    if (xhr.readyState == XMLHttpRequest.DONE) { 
-		        var directions = xhr.responseText;   
-		        console.log(directions);  
-		    }
-		}
+		var promiseObject = new Promise(function(resolve, reject){	
+			xhr.onreadystatechange = function() {
+		    	if (xhr.readyState == XMLHttpRequest.DONE) { 
+		    		if(xhr.status===200) {
+		        		var directions = xhr.responseText;   
+		        		resolve(directions);  
+		        	} else {
+		        		reject(xhr.status);
+		        	}
+		    	}
+			}
+		}); 
+		promiseObject.then(parseDirections, error); 
 	}
+}
+function parseDirections(directions) {
+	console.log(directions); 
+}
+function error(status) {
+	console.log('failed with status code' + status); 
 }
 
