@@ -1,6 +1,11 @@
 window.onload = function() {
     document.addEventListener("deviceready", init, false);
 }
+
+storage = Lawnchair({name: 'walk-information'}, function(e) {
+	console.log('storage initialized'); 
+})
+
 function init() { //run everything in here only when device is ready
 
 	var requestUri = 'http://localhost:8888/list-walks'; 
@@ -70,16 +75,15 @@ function getWalkDirections() {
 			    	}
 				}
 			}); 
-			promiseObject.then(addWalkToDatabase, error); 
+			promiseObject.then(saveWalk, error); 
 		// }
 	}
 }
-function addWalkToDatabase(directions) {
+function saveWalk(directions) {
 	
 	directions = JSON.parse(directions); 
 	var route = directions.routes[0]; 
 	var legs = route.legs; //a leg is a route between two waypoints 	
-	console.log(directions); 
 
 	var select = document.querySelector(".choose-walk");  
 	var walkName = select.options[select.selectedIndex].text; 
@@ -88,7 +92,61 @@ function addWalkToDatabase(directions) {
 	var startCoordinate = directions.waypoints[0].location.join(); 
 	var endCoordinate = directions.waypoints[directions.waypoints.length-1].location.join(); 
 
+	var legs = directions.routes[0].legs; 
 
+	for(var i=0; i<legs.length; i++) {
+		//remove properties you don't need 
+		delete legs[i].distance; 
+		delete legs[i].duration; 
+		delete legs[i].summary; 
+		delete legs[i].weight; 
+
+		//steps keep maneuver, location, type 
+		for(var index=0; index<legs[i].steps.length; index++) {
+
+			delete legs[i].steps[index].distance; 
+			delete legs[i].steps[index].duration; 
+			delete legs[i].steps[index].geometry; 
+			delete legs[i].steps[index].intersections; 
+			delete legs[i].steps[index].mode; 
+			delete legs[i].steps[index].name; 
+			delete legs[i].steps[index].weight; 
+			legs[i].steps[index].instruction = legs[i].steps[index].maneuver.instruction; 
+			legs[i].steps[index].location = legs[i].steps[index].maneuver.location; 
+			legs[i].steps[index].type = legs[i].steps[index].maneuver.type;
+			delete legs[i].steps[index].maneuver; 
+		}
+	}
+
+	storage.save({ key : walkName, 
+				   value : {
+				   		beginning: startCoordinate,
+				   		end : endCoordinate,
+				   		legs : legs
+				   }
+				}, function(doc){	
+		console.log(doc); 	
+	});
+
+	// Lawnchair({adaptor:'dom', table:'people'}, function() {
+	// 	console.log('hi'); 
+		
+	// 	var me = {name:'brian'}; 
+	// 	this.save({ key : 'name', value : 'blahblah'}, function(doc){
+ //    		console.log(doc); 
+	// 	});
+
+	// 	this.save({ key : 'rar', value : 'rararara'}, function(doc){
+ //    		console.log(doc); 
+	// 	});
+
+	// 	this.get('name', function(value) {
+	// 		console.log('retrieved item:'); 
+	// 		console.log(value); 
+
+
+	// 	}); 
+	// });
 
 	// 	var route = directionObject['routes'][0]; 
 	// var steps = route['steps'];
