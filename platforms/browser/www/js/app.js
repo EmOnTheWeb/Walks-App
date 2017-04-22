@@ -55,28 +55,35 @@ function getWalkDirections() {
     var selectedValue=select.value; 
    	
    	if(selectedValue !== '') {
-   		// if(walknotindatabase) {
-		    requestUri = 'http://localhost:8888/get-directions/'+selectedValue; 
+   		var walkName = select.options[select.selectedIndex].text; 
+   		storage.get(walkName, function(walkDirections) {
 
-			var xhr = new XMLHttpRequest();
-			    
-			xhr.open('GET',requestUri, true);
-			xhr.send(null);  
+   			if(walkDirections) {
+   				console.log(walkDirections); 
+   			} else {
+			    requestUri = 'http://localhost:8888/get-directions/'+selectedValue; 
 
-			var promiseObject = new Promise(function(resolve, reject){	
-				xhr.onreadystatechange = function() {
-			    	if (xhr.readyState == XMLHttpRequest.DONE) { 
-			    		if(xhr.status===200) {
-			        		var directions = xhr.responseText;   
-			        		resolve(directions);  
-			        	} else {
-			        		reject(xhr.status);
-			        	}
-			    	}
-				}
-			}); 
-			promiseObject.then(saveWalk, error); 
-		// }
+				var xhr = new XMLHttpRequest();
+				    
+				xhr.open('GET',requestUri, true);
+				xhr.send(null);  
+
+				var promiseObject = new Promise(function(resolve, reject){	
+					xhr.onreadystatechange = function() {
+				    	if (xhr.readyState == XMLHttpRequest.DONE) { 
+				    		if(xhr.status===200) {
+				        		var directions = xhr.responseText;   
+				        		resolve(directions);  
+				        	} else {
+				        		reject(xhr.status);
+				        	}
+				    	}
+					}
+				}); 
+				promiseObject.then(saveWalk, error); 
+
+			}
+		}); 
 	}
 }
 function saveWalk(directions) {
@@ -125,7 +132,7 @@ function saveWalk(directions) {
 				   		legs : legs
 				   }
 				}, function(doc){	
-		console.log(doc); 	
+		console.log('i saved the walk' + doc); 	
 	});
 
 	// Lawnchair({adaptor:'dom', table:'people'}, function() {
