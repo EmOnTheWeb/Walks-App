@@ -5,7 +5,6 @@ window.onload = function() {
 storage = Lawnchair({name: 'walk-information'}, function(e) {
 	console.log('storage initialized'); 
 })
-
 function init() { //run everything in here only when device is ready
 
 	var requestUri = 'http://localhost:8888/list-walks'; 
@@ -39,7 +38,15 @@ function init() { //run everything in here only when device is ready
 
 	var startWalkBtn = document.querySelector(".start-walk");
     
-    startWalkBtn.addEventListener("click", getWalkDirections, false);
+    startWalkBtn.addEventListener("click", function() {
+     	
+    	var promiseObject = new Promise(function(resolve, reject){	
+     		getWalkDirections(resolve, reject); 
+     	}); 
+     	promiseObject.then(function(value) {
+     		console.log(value); 
+     	})
+    }, false);
 }
 
 function removeExtAndUnderscore(filename) {
@@ -49,17 +56,16 @@ function removeExtAndUnderscore(filename) {
 	return removeUnderscore; 
 
 }
-function getWalkDirections() {
+function getWalkDirections(resolve, reject) {
 
     var select=document.querySelector(".choose-walk");
     var selectedValue=select.value; 
-   	
+
    	if(selectedValue !== '') {
    		var walkName = select.options[select.selectedIndex].text; 
    		storage.get(walkName, function(walkDirections) {
-
    			if(walkDirections) {
-   				console.log(walkDirections); 
+   				resolve(walkDirections); 
    			} else {
 			    requestUri = 'http://localhost:8888/get-directions/'+selectedValue; 
 
@@ -80,13 +86,12 @@ function getWalkDirections() {
 				    	}
 					}
 				}); 
-				promiseObject.then(saveWalk, error); 
-
+				promiseObject.then(saveWalk.bind(null,resolve), error); 
 			}
 		}); 
 	}
 }
-function saveWalk(directions) {
+function saveWalk(resolve, directions) {
 	
 	directions = JSON.parse(directions); 
 	var route = directions.routes[0]; 
@@ -132,50 +137,17 @@ function saveWalk(directions) {
 				   		legs : legs
 				   }
 				}, function(doc){	
-		console.log('i saved the walk' + doc); 	
+		console.log('walk saved locally'); 	
 	});
+	resolve({ key : walkName, 
+				   value : {
+				   		beginning: startCoordinate,
+				   		end : endCoordinate,
+				   		legs : legs
+				   }
+				}); 	
+  }
 
-	// Lawnchair({adaptor:'dom', table:'people'}, function() {
-	// 	console.log('hi'); 
-		
-	// 	var me = {name:'brian'}; 
-	// 	this.save({ key : 'name', value : 'blahblah'}, function(doc){
- //    		console.log(doc); 
-	// 	});
-
-	// 	this.save({ key : 'rar', value : 'rararara'}, function(doc){
- //    		console.log(doc); 
-	// 	});
-
-	// 	this.get('name', function(value) {
-	// 		console.log('retrieved item:'); 
-	// 		console.log(value); 
-
-
-	// 	}); 
-	// });
-
-	// 	var route = directionObject['routes'][0]; 
-	// var steps = route['steps'];
-
-	// var stepsRelevantData = []; 
-	// for (var i= 0; i< steps.length; i++) {
-
-	// 	var currentStep=steps[i]; 
-
-	// 	var direction=currentStep['direction']; 
-	// 	var distance=currentStep['distance']; 
-	// 	var instruction=currentStep['maneuver']['instruction']; 
-	// 	var type=currentStep['maneuver']['type']; 
-	// 	var coordinates=currentStep['maneuver']['location']['coordinates']; //coordinates are in [longitude, latitude] for google maps lat long goes the other way!
-
-	// 	stepsRelevantData.push({coordinates:coordinates, distance:distance, direction:direction, type:type, instruction: instruction})
-	// 	console.log(coordinates); 
-	// 	//testing purposes
-	// 	document.getElementById('key-coordinates').innerHTML+="Latitude: "+coordinates[1]+", Longitude "+coordinates[0]+ "</br>";  
-	// }
-	// return stepsRelevantData; 
-}
 function error(status) {
 	console.log('failed with status code' + status); 
 }
