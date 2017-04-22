@@ -43,8 +43,8 @@ function init() { //run everything in here only when device is ready
     	var promiseObject = new Promise(function(resolve, reject){	
      		getWalkDirections(resolve, reject); 
      	}); 
-     	promiseObject.then(function(value) {
-     		console.log(value); 
+     	promiseObject.then(function(walkDirections) {
+     		console.log(walkDirections); 
      	})
     }, false);
 }
