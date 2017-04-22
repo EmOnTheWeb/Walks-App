@@ -2,7 +2,7 @@ window.onload = function() {
     document.addEventListener("deviceready", init, false);
 }
 function init() { //run everything in here only when device is ready
-
+	
 	requestUri = 'http://localhost:8888/list-walks'; 
 
 	var xhr = new XMLHttpRequest();
@@ -80,6 +80,18 @@ function addWalkToDatabase(directions) {
 	var route = directions.routes[0]; 
 	var legs = route.legs; //a leg is a route between two waypoints 	
 	console.log(directions); 
+
+	var select = document.querySelector(".choose-walk");  
+	var walkName = select.options[select.selectedIndex].text; 
+
+	//walk start and end coordinates
+	var startCoordinate = directions.waypoints[0].location.join(); 
+	var endCoordinate = directions.waypoints[directions.waypoints.length-1].location.join(); 
+
+
+
+
+
 	// 	var route = directionObject['routes'][0]; 
 	// var steps = route['steps'];
 
