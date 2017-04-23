@@ -45,6 +45,7 @@ function init() { //run everything in here only when device is ready
      	}); 
      	promiseObject.then(function(walkDirections) {
      		console.log(walkDirections); 
+     		// document.querySelector('.walk-page').style.display = 'block'; 
      	})
     }, false);
 }
