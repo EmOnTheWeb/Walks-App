@@ -233,7 +233,7 @@ function startTracking(walkDirections, map) {
         	var currentLng = position.coords.longitude; 
         	var currentLat = position.coords.latitude; 
 
-        	addMarker(currentLng,currentLat, map); 
+        	updateMarkerPosition(currentLng,currentLat, map); 
             // //check against route directions
             // var lat = position.coords.latitude; 
             // var long = position.coords.longitude; 
@@ -276,7 +276,12 @@ function startTracking(walkDirections, map) {
     ); 
 }
 
-function addMarker(long,lat,map) { //add marker to map 
+function updateMarkerPosition(long,lat,map) { //add marker to map 
+	// //delete old marker 
+	var oldMarker = document.querySelector('mapboxgl-marker'); 
+	if(oldMarker) {
+		oldMarker.parentElement.removeChild(oldMarker); 
+	}
 
 	new mapboxgl.Marker()
 	.setLngLat([long,lat])
