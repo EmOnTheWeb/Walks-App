@@ -52,7 +52,8 @@ function init() { //run everything in here only when device is ready
      	}); 
      	promiseObject.then(function(walkDirections) {
      		// document.querySelector('.walk-page').style.display = 'block'; 
-     		generateMap(walkDirections); 
+     		var initializedMap = generateMap(walkDirections); //return map to update marker on it
+     		startTracking(walkDirections, initializedMap); 
      	})
     }, false);
 }
@@ -218,5 +219,67 @@ function generateMap(coordinateInfo) {
 	        }
 	    });
 	});
+	return map; 
+}
+
+function startTracking(walkDirections, map) {
+	// var time = 0; 
+	//start tracking
+	var watch_id= navigator.geolocation.watchPosition(
+
+        //success
+        function(position) {
+        	console.log(position); 
+        	var currentLng = position.coords.longitude; 
+        	var currentLat = position.coords.latitude; 
+
+        	addMarker(currentLng,currentLat, map); 
+            // //check against route directions
+            // var lat = position.coords.latitude; 
+            // var long = position.coords.longitude; 
+           	// //log coordinates. not more frequently than 30 seconds
+            // var currentTime= Date.now(); 
+            // if(time===0) {
+            //     time = currentTime; 
+            //     document.getElementById('log-coordinates').innerHTML += "<p class='log'>Current latitude is "+lat+" and current longitude is "+long+"</p>"; 
+            // } else {
+            //     if(currentTime-time > 30000) { //30 seconds
+            //         time=currentTime; 
+            //         document.getElementById('log-coordinates').innerHTML += "<p class='log'>Current latitude is "+lat+" and current longitude is "+long+"</p>"; 
+            //     }
+            // }
+           	// // console.log(coordinatesData); 
+            // //round numbers to 5 decimals 
+            // lat = lat.toFixed(4); 
+            // long = long.toFixed(4); 
+            // //log instructions
+            // var instructionData = nearInstructionCoordinate(lat,long, coordinatesData); 
+            // if(instructionData !== false) {
+            //     document.getElementById('log-instructions').innerHTML += "<div class='instruction'>"+instructionData.instruction+"</div>"; 
+            // }
+           // var waypoint = isClose(lat,long); //returns false if not close to anywhere, or waypoint number its closest to if close to a waypoint.
+           // if(waypoint !== false) {
+           //  //play corresponding audio 
+           //      audio_elem = 'waypoint_'+waypoint; 
+           //      playAudio(audio_elem);  
+           // } 
+           //  // if(waypoint) {
+           //  route_data.push(position); 
+        },
+        //error
+        function(error) {
+                console.log('couldnt get coordinates!!!'); 
+        },
+        //settings
+        { frequency: 5000, enableHighAccuracy: true}
+
+    ); 
+}
+
+function addMarker(long,lat,map) { //add marker to map 
+
+	new mapboxgl.Marker()
+	.setLngLat([long,lat])
+	.addTo(map);
 }
 
