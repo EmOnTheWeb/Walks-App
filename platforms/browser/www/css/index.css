@@ -67,3 +67,11 @@ body {
 /*.walk-page {
     display:none; 
 }*/
+
+#map {
+    position:absolute; 
+    width: 400px; 
+    height:300px; 
+    left:50%; 
+    transform:translate(-50%,0);
+}

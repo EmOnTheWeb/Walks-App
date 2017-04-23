@@ -5,6 +5,13 @@ window.onload = function() {
 storage = Lawnchair({name: 'walk-information'}, function(e) {
 	console.log('storage initialized'); 
 })
+
+storage.keys(function(key) {
+	this.remove(key); 
+}) //for testing
+
+storage.keys('keys.forEach(console.log)'); 
+
 function init() { //run everything in here only when device is ready
 
 	var requestUri = 'http://localhost:8888/list-walks'; 
@@ -44,8 +51,8 @@ function init() { //run everything in here only when device is ready
      		getWalkDirections(resolve, reject); 
      	}); 
      	promiseObject.then(function(walkDirections) {
-     		console.log(walkDirections); 
      		// document.querySelector('.walk-page').style.display = 'block'; 
+     		generateMap(walkDirections); 
      	})
     }, false);
 }
@@ -120,7 +127,7 @@ function saveWalk(resolve, directions) {
 			delete legs[i].steps[index].distance; 
 			delete legs[i].steps[index].duration; 
 			delete legs[i].steps[index].geometry; 
-			delete legs[i].steps[index].intersections; 
+			// delete legs[i].steps[index].intersections; 
 			delete legs[i].steps[index].mode; 
 			delete legs[i].steps[index].name; 
 			delete legs[i].steps[index].weight; 
@@ -138,8 +145,9 @@ function saveWalk(resolve, directions) {
 				   		legs : legs
 				   }
 				}, function(doc){	
-		console.log('walk saved locally'); 	
+		console.log('walk saved locally'); 
 	});
+	
 	resolve({ key : walkName, 
 				   value : {
 				   		beginning: startCoordinate,
@@ -151,5 +159,64 @@ function saveWalk(resolve, directions) {
 
 function error(status) {
 	console.log('failed with status code' + status); 
+}
+
+function generateMap(coordinateInfo) {
+	startCoordinateString = coordinateInfo.value.beginning; 
+	startCoordinateArray = startCoordinateString.split(','); //get it into its proper format
+
+	mapboxgl.accessToken = 'pk.eyJ1IjoiZW1pbGllZGFubmVuYmVyZyIsImEiOiJjaXhmOTB6ZnowMDAwMnVzaDVkcnpsY2M1In0.33yDwUq670jHD8flKjzqxg';
+	var map = new mapboxgl.Map({
+	    container: 'map',
+	    style: 'mapbox://styles/mapbox/streets-v9',
+	    center: startCoordinateArray,
+	    zoom: 15
+	});
+
+	console.log(coordinateInfo); 
+
+	//get all step intersection coordinates to plot route. more intersection coordinates means more accurate route plotting
+	var routeLegs = coordinateInfo.value.legs; 
+	var routeCoordinates = []; 
+
+	for(var i=0;i<routeLegs.length;i++) {
+		
+		var legSteps = routeLegs[i].steps; 
+		for(var index=0; index< legSteps.length; index++) {
+			var stepIntersections = legSteps[index].intersections; 
+			for(var inter=0; inter< stepIntersections.length; inter++) {
+				var intersectionCoordinate=stepIntersections[inter].location; 
+				routeCoordinates.push(intersectionCoordinate); 
+			}
+		}
+	}
+	console.log(routeCoordinates); 
+
+	map.on('load', function () {
+
+	    map.addLayer({
+	        "id": "route",
+	        "type": "line",
+	        "source": {
+	            "type": "geojson",
+	            "data": {
+	                "type": "Feature",
+	                "properties": {},
+	                "geometry": {
+	                    "type": "LineString",
+	                    "coordinates": routeCoordinates
+	                }
+	            }
+	        },
+	        "layout": {
+	            "line-join": "round",
+	            "line-cap": "round"
+	        },
+	        "paint": {
+	            "line-color": "#888",
+	            "line-width": 8
+	        }
+	    });
+	});
 }
 
