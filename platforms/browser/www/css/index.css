@@ -75,3 +75,8 @@ body {
     left:50%; 
     transform:translate(-50%,0);
 }
+.mapboxgl-marker {
+    width:18px; 
+    height:18px; 
+    background-color:red; 
+}
