@@ -14,7 +14,7 @@ storage.keys('keys.forEach(console.log)');
 
 function init() { //run everything in here only when device is ready
 
-	var requestUri = 'http://83.216.89.77/list-walks'; 
+	var requestUri = 'http://localhost:8888/list-walks'; 
 
 	var xhr = new XMLHttpRequest();
 	    
@@ -72,11 +72,12 @@ function getWalkDirections(resolve, reject) {
 
    	if(selectedValue !== '') {
    		var walkName = select.options[select.selectedIndex].text; 
+   		getLandmarkDescriptions(walkName);
    		storage.get(walkName, function(walkDirections) {
    			if(walkDirections) {
    				resolve(walkDirections); 
    			} else {
-			    requestUri = 'http://83.216.89.77/get-directions/'+selectedValue; 
+			    requestUri = 'http://localhost:8888/get-directions/'+selectedValue; 
 
 				var xhr = new XMLHttpRequest();
 				    
@@ -220,6 +221,23 @@ function generateMap(coordinateInfo) {
 	return map; 
 }
 
+function getLandmarkDescriptions(walkName) {
+
+	var requestUri = 'http://localhost:8888/getLandmarkDescriptions/'+ walkName; 
+
+	var xhr = new XMLHttpRequest();
+	    
+	xhr.open('GET',requestUri, true);
+	xhr.send(null);  
+
+	xhr.onreadystatechange = function() {
+	    if (xhr.readyState == XMLHttpRequest.DONE) { 
+	        var descriptions = xhr.responseText;
+	        saveLandmarkDescriptions(descriptions);        
+	    }
+	}
+}
+
 function startTracking(walkDirections, map) {
 	// var time = 0; 
 	console.log(walkDirections); 
@@ -287,13 +305,5 @@ function updateMarkerPosition(long,lat,map) { //add marker to map
 	map.flyTo({
         center: [long, lat]
     });
-
-
-     TTS
-        .speak('hello, world!', function () {
-            alert('success');
-        }, function (reason) {
-            alert(reason);
-        });
 }
 

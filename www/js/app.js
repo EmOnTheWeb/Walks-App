@@ -72,6 +72,7 @@ function getWalkDirections(resolve, reject) {
 
    	if(selectedValue !== '') {
    		var walkName = select.options[select.selectedIndex].text; 
+   		getLandmarkDescriptions(walkName);
    		storage.get(walkName, function(walkDirections) {
    			if(walkDirections) {
    				resolve(walkDirections); 
@@ -218,6 +219,23 @@ function generateMap(coordinateInfo) {
 	    });
 	});
 	return map; 
+}
+
+function getLandmarkDescriptions(walkName) {
+
+	var requestUri = 'http://localhost:8888/getLandmarkDescriptions/'+ walkName; 
+
+	var xhr = new XMLHttpRequest();
+	    
+	xhr.open('GET',requestUri, true);
+	xhr.send(null);  
+
+	xhr.onreadystatechange = function() {
+	    if (xhr.readyState == XMLHttpRequest.DONE) { 
+	        var descriptions = xhr.responseText;
+	        saveLandmarkDescriptions(descriptions);        
+	    }
+	}
 }
 
 function startTracking(walkDirections, map) {
