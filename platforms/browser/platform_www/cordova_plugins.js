@@ -602,6 +602,14 @@ module.exports = [
             "navigator.notification",
             "navigator"
         ]
+    },
+    {
+        "file": "plugins/cordova-plugin-tts/www/tts.js",
+        "id": "cordova-plugin-tts.tts",
+        "pluginId": "cordova-plugin-tts",
+        "clobbers": [
+            "TTS"
+        ]
     }
 ];
 module.exports.metadata = 
@@ -627,7 +635,8 @@ module.exports.metadata =
     "cordova-plugin-splashscreen": "3.2.2",
     "cordova-plugin-statusbar": "2.1.3",
     "cordova-plugin-vibration": "2.1.4",
-    "cordova-plugin-whitelist": "1.2.2"
+    "cordova-plugin-whitelist": "1.2.2",
+    "cordova-plugin-tts": "0.2.3"
 }
 // BOTTOM OF METADATA
 });

@@ -14,7 +14,7 @@ storage.keys('keys.forEach(console.log)');
 
 function init() { //run everything in here only when device is ready
 
-	var requestUri = 'http://localhost:8888/list-walks'; 
+	var requestUri = 'http://83.216.89.77/list-walks'; 
 
 	var xhr = new XMLHttpRequest();
 	    
@@ -76,7 +76,7 @@ function getWalkDirections(resolve, reject) {
    			if(walkDirections) {
    				resolve(walkDirections); 
    			} else {
-			    requestUri = 'http://localhost:8888/get-directions/'+selectedValue; 
+			    requestUri = 'http://83.216.89.77/get-directions/'+selectedValue; 
 
 				var xhr = new XMLHttpRequest();
 				    
@@ -287,5 +287,13 @@ function updateMarkerPosition(long,lat,map) { //add marker to map
 	map.flyTo({
         center: [long, lat]
     });
+
+
+     TTS
+        .speak('hello, world!', function () {
+            alert('success');
+        }, function (reason) {
+            alert(reason);
+        });
 }
 
