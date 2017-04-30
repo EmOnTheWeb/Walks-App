@@ -43,9 +43,7 @@ body {
     justify-content: center;
     font-size: 21px;
     font-weight: bold;
-    position:absolute;
-    left:50%; 
-    transform:translate(-50%, 0);
+    margin:15px 0; 
 }
 .intro-page .btn:nth-of-type(2) {
     bottom:100px; 
@@ -68,12 +66,9 @@ body {
     display:none; 
 }*/
 
-#map {
-    position:absolute; 
+#map {   
     width: 400px; 
     height:300px; 
-    left:50%; 
-    transform:translate(-50%,0);
 }
 .mapboxgl-marker {
     width:18px; 
