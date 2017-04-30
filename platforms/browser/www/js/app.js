@@ -174,8 +174,6 @@ function generateMap(coordinateInfo) {
 	    zoom: 15
 	});
 
-	console.log(coordinateInfo); 
-
 	//get all step intersection coordinates to plot route. more intersection coordinates means more accurate route plotting
 	var routeLegs = coordinateInfo.value.legs; 
 	var routeCoordinates = []; 
@@ -224,6 +222,7 @@ function generateMap(coordinateInfo) {
 
 function startTracking(walkDirections, map) {
 	// var time = 0; 
+	console.log(walkDirections); 
 	//start tracking
 	var watch_id= navigator.geolocation.watchPosition(
 
@@ -275,16 +274,18 @@ function startTracking(walkDirections, map) {
 
     ); 
 }
-
+var currentMarker; 
 function updateMarkerPosition(long,lat,map) { //add marker to map 
-	// //delete old marker 
-	var oldMarker = document.querySelector('mapboxgl-marker'); 
-	if(oldMarker) {
-		oldMarker.parentElement.removeChild(oldMarker); 
+	//delete old marker before readding for new position
+	if(currentMarker) {
+		currentMarker.remove(); 
 	}
-
-	new mapboxgl.Marker()
+	currentMarker = new mapboxgl.Marker()
 	.setLngLat([long,lat])
 	.addTo(map);
+
+	map.flyTo({
+        center: [long, lat]
+    });
 }
 
