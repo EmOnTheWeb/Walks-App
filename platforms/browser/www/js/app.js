@@ -47,15 +47,69 @@ function init() { //run everything in here only when device is ready
     
     startWalkBtn.addEventListener("click", function() {
      	
-    	var promiseObject = new Promise(function(resolve, reject){	
-     		getWalkDirections(resolve, reject); 
-     	}); 
-     	promiseObject.then(function(walkDirections) {
-     		// document.querySelector('.walk-page').style.display = 'block'; 
-     		var initializedMap = generateMap(walkDirections); //return map to update marker on it
-     		startTracking(walkDirections, initializedMap); 
-     	})
-    }, false);
+
+     	// var landmarkDescriptionsMethod = function() {
+
+
+
+
+     	// }; 
+
+     	var select=document.querySelector(".choose-walk");
+    	var selectedValue=select.value; 
+    	if(selectedValue !== '') {
+    		var walkName = select.options[select.selectedIndex].text;
+    	} 
+
+     	getTurnByTurn(walkName).then(getLandmarkDescriptions(walkName)).then(generateMapAndTrack);
+	}); 
+}
+
+var getTurnByTurn = function(walkName) {    		
+	var promise = new Promise(function(resolve, reject){	
+			getWalkDirections(resolve, reject, walkName); 
+		}); 
+		return promise; 
+} 
+
+var getLandmarkDescriptions = function(walkName) {
+	var promise = new Promise(function(resolve, reject) {
+		storage.get(walkName + '-landmarks', function(walkLandmarks) {
+
+			if(walkLandmarks) {
+				resolve(walkLandmarks); 
+			} else {
+				var requestUri = 'http://localhost:8888/get-landmarks/'+ walkName; 
+
+				var xhr = new XMLHttpRequest();
+				    
+				xhr.open('GET',requestUri, true);
+				xhr.send(null);  
+
+				xhr.onreadystatechange = function() {
+				    if (xhr.readyState == XMLHttpRequest.DONE) { 
+				        var descriptions = xhr.responseText;
+				      	console.log(descriptions);  
+				        saveLandmarkDescriptions(descriptions, resolve, reject);        
+				    }
+				}
+			}
+		}); 
+	}); 
+	return promise; 
+}
+
+function saveLandmarkDescriptions(descriptions, resolve, reject) {
+
+
+
+
+}
+
+var generateMapAndTrack = function(walkDirections) {
+	// document.querySelector('.walk-page').style.display = 'block'; 
+	var initializedMap = generateMap(walkDirections); //return map to update marker on it
+	startTracking(walkDirections, initializedMap); 
 }
 
 function removeExtAndUnderscore(filename) {
@@ -65,14 +119,14 @@ function removeExtAndUnderscore(filename) {
 	return removeUnderscore; 
 
 }
-function getWalkDirections(resolve, reject) {
+
+function getWalkDirections(resolve, reject, walkName) {
 
     var select=document.querySelector(".choose-walk");
     var selectedValue=select.value; 
 
-   	if(selectedValue !== '') {
+   	if(walkName) {
    		var walkName = select.options[select.selectedIndex].text; 
-   		getLandmarkDescriptions(walkName);
    		storage.get(walkName, function(walkDirections) {
    			if(walkDirections) {
    				resolve(walkDirections); 
@@ -101,6 +155,7 @@ function getWalkDirections(resolve, reject) {
 		}); 
 	}
 }
+
 function saveWalk(resolve, directions) {
 	
 	directions = JSON.parse(directions); 
@@ -190,7 +245,7 @@ function generateMap(coordinateInfo) {
 			}
 		}
 	}
-	console.log(routeCoordinates); 
+	// console.log(routeCoordinates); 
 
 	map.on('load', function () {
 
@@ -221,32 +276,15 @@ function generateMap(coordinateInfo) {
 	return map; 
 }
 
-function getLandmarkDescriptions(walkName) {
-
-	var requestUri = 'http://localhost:8888/getLandmarkDescriptions/'+ walkName; 
-
-	var xhr = new XMLHttpRequest();
-	    
-	xhr.open('GET',requestUri, true);
-	xhr.send(null);  
-
-	xhr.onreadystatechange = function() {
-	    if (xhr.readyState == XMLHttpRequest.DONE) { 
-	        var descriptions = xhr.responseText;
-	        saveLandmarkDescriptions(descriptions);        
-	    }
-	}
-}
-
 function startTracking(walkDirections, map) {
 	// var time = 0; 
-	console.log(walkDirections); 
+	// console.log(walkDirections); 
 	//start tracking
 	var watch_id= navigator.geolocation.watchPosition(
 
         //success
         function(position) {
-        	console.log(position); 
+        	// console.log(position); 
         	var currentLng = position.coords.longitude; 
         	var currentLat = position.coords.latitude; 
 
@@ -292,6 +330,7 @@ function startTracking(walkDirections, map) {
 
     ); 
 }
+
 var currentMarker; 
 function updateMarkerPosition(long,lat,map) { //add marker to map 
 	//delete old marker before readding for new position
