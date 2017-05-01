@@ -47,16 +47,19 @@ function init() { //run everything in here only when device is ready
     
     startWalkBtn.addEventListener("click", function() {
      	
-    	var promiseObject = new Promise(function(resolve, reject){	
-     		getWalkDirections(resolve, reject); 
-     	}); 
-     	promiseObject.then(function(walkDirections) {
+   
+     	promisedWalkDirections().then(function(walkDirections) {
      		// document.querySelector('.walk-page').style.display = 'block'; 
      		var initializedMap = generateMap(walkDirections); //return map to update marker on it
      		startTracking(walkDirections, initializedMap); 
      	})
     }, false);
 }
+
+var promisedWalkDirections = function() {
+	var promise = new Promise(getWalkDirections);
+	return promise; 
+}; 
 
 function removeExtAndUnderscore(filename) {
 
@@ -72,7 +75,7 @@ function getWalkDirections(resolve, reject) {
 
    	if(selectedValue !== '') {
    		var walkName = select.options[select.selectedIndex].text; 
-   		getLandmarkDescriptions(walkName);
+   
    		storage.get(walkName, function(walkDirections) {
    			if(walkDirections) {
    				resolve(walkDirections); 
@@ -84,19 +87,16 @@ function getWalkDirections(resolve, reject) {
 				xhr.open('GET',requestUri, true);
 				xhr.send(null);  
 
-				var promiseObject = new Promise(function(resolve, reject){	
-					xhr.onreadystatechange = function() {
-				    	if (xhr.readyState == XMLHttpRequest.DONE) { 
-				    		if(xhr.status===200) {
-				        		var directions = xhr.responseText;   
-				        		resolve(directions);  
-				        	} else {
-				        		reject(xhr.status);
-				        	}
-				    	}
-					}
-				}); 
-				promiseObject.then(saveWalk.bind(null,resolve), error); 
+				xhr.onreadystatechange = function() {
+			    	if (xhr.readyState == XMLHttpRequest.DONE) { 
+			    		if(xhr.status===200) {
+			        		var directions = xhr.responseText;   
+			        		saveWalk(resolve, directions);  
+			        	} else {
+			        		reject(xhr.status); 
+			        	}
+			    	}
+				}
 			}
 		}); 
 	}
