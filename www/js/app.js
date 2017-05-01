@@ -48,14 +48,11 @@ function init() { //run everything in here only when device is ready
     startWalkBtn.addEventListener("click", function() {
      	
 	    promisedWalkDirections().then(promisedLandmarkDescriptions).then(function(walkData) {
-	    	console.log('there is data'); 
-	    	console.log(walkData); 
+	    	// document.querySelector('.walk-page').style.display = 'block'; 
+     		var initializedMap = generateMap(walkData.walkDirections); //return map to update marker on it
+     		startTracking(walkData, initializedMap); 
 	    }); 
   	});   	
-     		// document.querySelector('.walk-page').style.display = 'block'; 
-     	// 	var initializedMap = generateMap(walkDirections); //return map to update marker on it
-     	// 	startTracking(walkDirections, initializedMap); 
-     	// })  
 }
 
 var promisedWalkDirections = function() {
@@ -284,9 +281,9 @@ function getLandmarkDescriptions(walkName) {
 	}
 }
 
-function startTracking(walkDirections, map) {
+function startTracking(walkData, map) {
 	// var time = 0; 
-	console.log(walkDirections); 
+	console.log(walkData); 
 	//start tracking
 	var watch_id= navigator.geolocation.watchPosition(
 
