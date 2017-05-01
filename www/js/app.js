@@ -59,26 +59,27 @@ function init() { //run everything in here only when device is ready
     	var selectedValue=select.value; 
     	if(selectedValue !== '') {
     		var walkName = select.options[select.selectedIndex].text;
-     		getTurnByTurn(walkName, selectedValue).then(getLandmarkDescriptions(walkName, selectedValue)).then(generateMapAndTrack);
-     	} 
+    	} 
+
+     	getTurnByTurn(walkName).then(getLandmarkDescriptions(walkName)).then(generateMapAndTrack);
 	}); 
 }
 
-var getTurnByTurn = function(walkName, selectedValue) {    		
+var getTurnByTurn = function(walkName) {    		
 	var promise = new Promise(function(resolve, reject){	
-			getWalkDirections(resolve, reject, walkName, selectedValue); 
+			getWalkDirections(resolve, reject, walkName); 
 		}); 
 		return promise; 
 } 
 
-var getLandmarkDescriptions = function(walkName, selectedValue) {
+var getLandmarkDescriptions = function(walkName) {
 	var promise = new Promise(function(resolve, reject) {
 		storage.get(walkName + '-landmarks', function(walkLandmarks) {
 
 			if(walkLandmarks) {
 				resolve(walkLandmarks); 
 			} else {
-				var requestUri = 'http://localhost:8888/get-landmarks/'+ selectedValue; 
+				var requestUri = 'http://localhost:8888/get-landmarks/'+ walkName; 
 
 				var xhr = new XMLHttpRequest();
 				    
@@ -119,10 +120,13 @@ function removeExtAndUnderscore(filename) {
 
 }
 
-function getWalkDirections(resolve, reject, walkName, selectedValue) {
+function getWalkDirections(resolve, reject, walkName) {
+
+    var select=document.querySelector(".choose-walk");
+    var selectedValue=select.value; 
 
    	if(walkName) {
-   		
+   		var walkName = select.options[select.selectedIndex].text; 
    		storage.get(walkName, function(walkDirections) {
    			if(walkDirections) {
    				resolve(walkDirections); 
