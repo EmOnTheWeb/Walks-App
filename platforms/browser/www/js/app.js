@@ -47,19 +47,65 @@ function init() { //run everything in here only when device is ready
     
     startWalkBtn.addEventListener("click", function() {
      	
-   
-     	promisedWalkDirections().then(function(walkDirections) {
+	    promisedWalkDirections().then(promisedLandmarkDescriptions).then(function(walkData) {
+	    	console.log('there is data'); 
+	    	console.log(walkData); 
+	    }); 
+  	});   	
      		// document.querySelector('.walk-page').style.display = 'block'; 
-     		var initializedMap = generateMap(walkDirections); //return map to update marker on it
-     		startTracking(walkDirections, initializedMap); 
-     	})
-    }, false);
+     	// 	var initializedMap = generateMap(walkDirections); //return map to update marker on it
+     	// 	startTracking(walkDirections, initializedMap); 
+     	// })  
 }
 
 var promisedWalkDirections = function() {
 	var promise = new Promise(getWalkDirections);
 	return promise; 
-}; 
+};
+
+var promisedLandmarkDescriptions = function(walkDirections) {
+	var promise = new Promise(function(resolve, reject) {
+		var select=document.querySelector(".choose-walk");
+    	var selectedValue=select.value; 
+    	
+    	if(selectedValue !== '') {
+   			var walkName = select.options[select.selectedIndex].text; 
+
+   			storage.get(walkName + '-landmarks', function(landmarkDescriptions) {
+
+   				if(landmarkDescriptions) {
+   					resolve({walkDirections: walkDirections, landmarkDescriptions: landmarkDescriptions.value.descriptions}); 
+   				} else {
+   					//make the request to get the descriptions
+   					requestUri = 'http://localhost:8888/get-landmarks/'+selectedValue; 
+
+					var xhr = new XMLHttpRequest();
+					    
+					xhr.open('GET',requestUri, true);
+					xhr.send(null);  
+
+					xhr.onreadystatechange = function() {
+				    	if (xhr.readyState == XMLHttpRequest.DONE) { 
+				    		if(xhr.status===200) {
+				        		var descriptions = xhr.responseText;   
+				        		//save descriptions  
+				        		storage.save({ key : walkName + '-landmarks', 
+										value : {	descriptions: descriptions }
+									}, function(doc){	
+								});
+								console.log('landmark descriptions saved locally!'); 
+								resolve({walkDirections: walkDirections, landmarkDescriptions: descriptions})
+				        	} else {
+				        		reject(xhr.status); 
+				        	}
+				    	}
+					}
+   				}
+   			}); 
+   		}
+	}); 
+	return promise; 
+} 
 
 function removeExtAndUnderscore(filename) {
 
