@@ -290,41 +290,58 @@ function startTracking(walkData, map) {
         //success
         function(position) {
         	console.log(position); 
+        
         	var currentLng = position.coords.longitude; 
         	var currentLat = position.coords.latitude; 
 
-        	updateMarkerPosition(currentLng,currentLat, map); 
-            // //check against route directions
-            // var lat = position.coords.latitude; 
-            // var long = position.coords.longitude; 
-           	// //log coordinates. not more frequently than 30 seconds
-            // var currentTime= Date.now(); 
-            // if(time===0) {
-            //     time = currentTime; 
-            //     document.getElementById('log-coordinates').innerHTML += "<p class='log'>Current latitude is "+lat+" and current longitude is "+long+"</p>"; 
-            // } else {
-            //     if(currentTime-time > 30000) { //30 seconds
-            //         time=currentTime; 
-            //         document.getElementById('log-coordinates').innerHTML += "<p class='log'>Current latitude is "+lat+" and current longitude is "+long+"</p>"; 
-            //     }
-            // }
-           	// // console.log(coordinatesData); 
-            // //round numbers to 5 decimals 
-            // lat = lat.toFixed(4); 
-            // long = long.toFixed(4); 
-            // //log instructions
-            // var instructionData = nearInstructionCoordinate(lat,long, coordinatesData); 
-            // if(instructionData !== false) {
-            //     document.getElementById('log-instructions').innerHTML += "<div class='instruction'>"+instructionData.instruction+"</div>"; 
-            // }
-           // var waypoint = isClose(lat,long); //returns false if not close to anywhere, or waypoint number its closest to if close to a waypoint.
-           // if(waypoint !== false) {
-           //  //play corresponding audio 
-           //      audio_elem = 'waypoint_'+waypoint; 
-           //      playAudio(audio_elem);  
-           // } 
-           //  // if(waypoint) {
-           //  route_data.push(position); 
+        	updateMarkerPosition(currentLng,currentLat, map);
+
+        	//loop through all steps to see if you're at a significant location
+        	var coordinateData;
+        	var journeyLegs;  
+
+        	coordinateData = walkData.walkDirections.value; 
+        	journeyLegs = coordinateData.legs; 
+        	
+        	for(var i =0; i < journeyLegs.length; i++) {
+        		
+        		var currentLeg = journeyLegs[i]; 
+
+        		//loop through steps
+        		var legSteps = currentLeg.steps; 
+        		for(var j =0; j < legSteps.length; j++) {
+        			var currentStep = legSteps[j]; 
+        			var stepLocation = currentStep.location; 
+
+        			var stepLat; 
+        			var stepLng; 
+
+        			stepLat = stepLocation[1]; 
+        			stepLng = stepLocation[0]; 
+        			
+        			//compare geoposition to step position 
+        			if(isClose(currentLat, currentLng, stepLat, stepLng)) {
+        				
+        				//if step type is arrive you're at a waypoint, get waypoint info
+        					
+        				if(currentStep.type==="arrive" && notAtEnd(stepLocation, coordinateData.end)) {
+        					//get waypoint info. 
+        					console.log('you are at a waypoint');
+        					//get leg, get corresponding waypoint info index
+        				} 
+        				else {	 // get instruction 
+
+        					var instruction = currentStep.instruction; 
+        					//read this out 
+
+
+        				}
+        				//now break out of everything
+        			}
+        			else { console.log('not close really'); }
+
+        		}
+        	} 
         },
         //error
         function(error) {
@@ -335,6 +352,30 @@ function startTracking(walkData, map) {
 
     ); 
 }
+
+function notAtEnd(stepCoordinates, walkEndCoordinates) {
+	var stepCoordinatesString = stepCoordinates.join(); 
+	return (stepCoordinatesString === walkEndCoordinates) ? false : true; 
+}
+
+function isClose(currentLat, currentLng, stepLat, stepLng) {
+
+	//pretty crude. Check to see if coordinates match to four decimal places 
+	//in future probably want to calculate based on trajectory as well. So only counts as close if you are approaching from the right direction... 
+	roundedCurrentLat = currentLat.toFixed(4); // round to 5 decimals 
+	roundedCurrentLng = currentLng.toFixed(4); 
+
+	roundedStepLat = stepLat.toFixed(4); 
+	roundedStepLng = stepLng.toFixed(4)
+
+	console.log('current Lat' + roundedCurrentLat + '..' + 'step lat' + roundedStepLat); 
+	console.log('current Lng' + roundedCurrentLng + '..' + 'step Lng' + roundedStepLng); 
+
+
+	return (roundedCurrentLat === roundedStepLat && roundedCurrentLng === roundedStepLng) ? true: false; 
+}	
+
+
 var currentMarker; 
 function updateMarkerPosition(long,lat,map) { //add marker to map 
 	//delete old marker before readding for new position
