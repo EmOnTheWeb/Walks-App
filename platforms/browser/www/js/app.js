@@ -360,8 +360,9 @@ function getWaypointDescription(legIndex, descriptions) {
 
 	console.log(legIndex); 
 
-	var descriptions = descriptions.replace(/(\r\n|\r|\n)/g, '<br />');
+	var descriptions = descriptions.replace(/(?:\r)/g, '<br />');
 	var split = descriptions.split('<br />'); 
+	console.log(descriptions); 
 	console.log(split); 
 
 }
