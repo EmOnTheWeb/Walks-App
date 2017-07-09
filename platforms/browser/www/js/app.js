@@ -330,6 +330,13 @@ function startTracking(walkData, map) {
         					var waypointDescription = getWaypointDescription(i,walkData.landmarkDescriptions); 
         					console.log(waypointDescription); 
         				} 
+        				else if(currentStep.type==="arrive" && !notAtEnd(stepLocation, coordinateData.end)) { // you're at the end
+
+        					console.log('walk finished'); 
+        				}
+        				else if(stepLocation.join() === coordinateData.beginning) {
+        					console.log('beginning of walk'); 
+        				}
         				else {	 // get instruction 
 
         					var instruction = currentStep.instruction; 
@@ -339,6 +346,8 @@ function startTracking(walkData, map) {
 
         				}
         				//now break out of everything
+        				j = legSteps.length; 
+        				i = journeyLegs.length; 
         			}
         			else { console.log('not close really'); }
 
