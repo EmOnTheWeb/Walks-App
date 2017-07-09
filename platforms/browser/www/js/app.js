@@ -10,7 +10,7 @@ storage.keys('keys.forEach(console.log)');
 
 function init() { //run everything in here only when device is ready
 
-	var requestUri = 'http://localhost:8888/list-walks'; 
+	var requestUri = 'http://api-walks.emiliedannenberg.co.uk/list-walks'; 
 
 	var xhr = new XMLHttpRequest();
 	    
@@ -73,7 +73,7 @@ var promisedLandmarkDescriptions = function(walkDirections) {
    					resolve({walkDirections: walkDirections, landmarkDescriptions: landmarkDescriptions.value.descriptions}); 
    				} else {
    					//make the request to get the descriptions
-   					requestUri = 'http://localhost:8888/get-landmarks/'+selectedValue; 
+   					requestUri = 'http://api-walks.emiliedannenberg.co.uk/get-landmarks/'+selectedValue; 
    				
 					var xhr = new XMLHttpRequest();
 					    
@@ -122,7 +122,7 @@ function getWalkDirections(resolve, reject) {
    			if(walkDirections) {
    				resolve(walkDirections); 
    			} else {
-			    requestUri = 'http://localhost:8888/get-directions/'+selectedValue; 
+			    requestUri = 'http://api-walks.emiliedannenberg.co.uk/get-directions/'+selectedValue; 
 
 				var xhr = new XMLHttpRequest();
 				    
@@ -265,7 +265,7 @@ function generateMap(coordinateInfo) {
 
 function getLandmarkDescriptions(walkName) {
 
-	var requestUri = 'http://localhost:8888/getLandmarkDescriptions/'+ walkName; 
+	var requestUri = 'http://api-walks.emiliedannenberg.co.uk/getLandmarkDescriptions/'+ walkName; 
 
 	var xhr = new XMLHttpRequest();
 	    
