@@ -327,8 +327,8 @@ function startTracking(walkData, map) {
         					//get waypoint info. 
         					console.log('you are at a waypoint');
         					//get leg, get corresponding waypoint info index
-        					getWaypointDescription(i,walkData.landmarkDescriptions); 
-        					
+        					var waypointDescription = getWaypointDescription(i,walkData.landmarkDescriptions); 
+        					console.log(waypointDescription); 
         				} 
         				else {	 // get instruction 
 
@@ -356,15 +356,11 @@ function startTracking(walkData, map) {
 }
 
 function getWaypointDescription(legIndex, descriptions) {
-	var infoIndex = legIndex +1; 
-
-	console.log(legIndex); 
-
+	var infoIndex = legIndex; 
 	var descriptions = descriptions.replace(/(?:\r)/g, '<br />');
 	var split = descriptions.split('<br />'); 
-	console.log(descriptions); 
-	console.log(split); 
-
+	
+	return split[infoIndex].trim(); 
 }
 
 function notAtEnd(stepCoordinates, walkEndCoordinates) {
