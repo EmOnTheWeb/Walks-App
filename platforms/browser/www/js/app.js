@@ -321,30 +321,31 @@ function startTracking(walkData, map) {
         			//compare geoposition to step position 
         			if(isClose(currentLat, currentLng, stepLat, stepLng)) {
         				
-        				//if step type is arrive you're at a waypoint, get waypoint info
-        					
+        				var msg = new SpeechSynthesisUtterance();//ur gunna say something!!
+
+        				//if step type is arrive you're at a waypoint, get waypoint info	
         				if(currentStep.type==="arrive" && notAtEnd(stepLocation, coordinateData.end)) {
         					//get waypoint info. 
         					console.log('you are at a waypoint');
         					//get leg, get corresponding waypoint info index
         					var waypointDescription = getWaypointDescription(i,walkData.landmarkDescriptions); 
-        					console.log(waypointDescription); 
+        					msg.text = waypointDescription; 
         				} 
         				else if(currentStep.type==="arrive" && !notAtEnd(stepLocation, coordinateData.end)) { // you're at the end
-
-        					console.log('walk finished'); 
+        					msg.text = 'walk finished'; 
         				}
         				else if(stepLocation.join() === coordinateData.beginning) {
-        					console.log('beginning of walk'); 
-        				}
+        					msg.text = 'beginning of walk'; 	
+        				}	
         				else {	 // get instruction 
 
         					var instruction = currentStep.instruction; 
         					//read this out 
-        					console.log(currentStep.instruction); 
-
-
+        					msg.text = instruction; 
         				}
+
+        				//say your thang
+        				window.speechSynthesis.speak(msg);
         				//now break out of everything
         				j = legSteps.length; 
         				i = journeyLegs.length; 
