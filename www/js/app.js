@@ -6,10 +6,6 @@ storage = Lawnchair({name: 'walk-information'}, function(e) {
 	console.log('storage initialized'); 
 })
 
-storage.keys(function(key) {
-	this.remove(key); 
-}) //for testing
-
 storage.keys('keys.forEach(console.log)'); 
 
 function init() { //run everything in here only when device is ready
@@ -66,7 +62,10 @@ var promisedLandmarkDescriptions = function(walkDirections) {
     	var selectedValue=select.value; 
     	
     	if(selectedValue !== '') {
-   			var walkName = select.options[select.selectedIndex].text; 
+   			var walkName = select.options[select.selectedIndex].text;
+   // 			storage.keys(function(key) {
+			// 	this.remove(walkName+'-landmarks'); 
+			// })  
 
    			storage.get(walkName + '-landmarks', function(landmarkDescriptions) {
 
@@ -75,7 +74,7 @@ var promisedLandmarkDescriptions = function(walkDirections) {
    				} else {
    					//make the request to get the descriptions
    					requestUri = 'http://localhost:8888/get-landmarks/'+selectedValue; 
-
+   				
 					var xhr = new XMLHttpRequest();
 					    
 					xhr.open('GET',requestUri, true);
@@ -318,7 +317,7 @@ function startTracking(walkData, map) {
 
         			stepLat = stepLocation[1]; 
         			stepLng = stepLocation[0]; 
-        			
+        		
         			//compare geoposition to step position 
         			if(isClose(currentLat, currentLng, stepLat, stepLng)) {
         				
@@ -328,11 +327,14 @@ function startTracking(walkData, map) {
         					//get waypoint info. 
         					console.log('you are at a waypoint');
         					//get leg, get corresponding waypoint info index
+        					getWaypointDescription(i,walkData.landmarkDescriptions); 
+        					
         				} 
         				else {	 // get instruction 
 
         					var instruction = currentStep.instruction; 
         					//read this out 
+        					console.log(currentStep.instruction); 
 
 
         				}
@@ -351,6 +353,17 @@ function startTracking(walkData, map) {
         { frequency: 5000, enableHighAccuracy: true}
 
     ); 
+}
+
+function getWaypointDescription(legIndex, descriptions) {
+	var infoIndex = legIndex +1; 
+
+	console.log(legIndex); 
+
+	var descriptions = descriptions.replace(/(\r\n|\r|\n)/g, '<br />');
+	var split = descriptions.split('<br />'); 
+	console.log(split); 
+
 }
 
 function notAtEnd(stepCoordinates, walkEndCoordinates) {
