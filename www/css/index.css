@@ -76,3 +76,7 @@ body {
     height:18px; 
     background-color:red; 
 }
+.waypoint-text {
+    width:400px; 
+    margin:auto; 
+}
