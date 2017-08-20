@@ -280,6 +280,16 @@ function getLandmarkDescriptions(walkName) {
 	    }
 	}
 }
+
+var waypointsReached = {  //object to track whether you've already hit a waypoint
+	start: false, 
+	end: false,
+	waypoint: [],
+	steps: []
+}
+
+
+
 var showMsgDiv = document.querySelector(".waypoint-text");
 function startTracking(walkData, map) {
 	// var time = 0; 
@@ -321,34 +331,55 @@ function startTracking(walkData, map) {
         		
         			//compare geoposition to step position 
         			if(isClose(currentLat, currentLng, stepLat, stepLng)) {
-        				
         				// var msg = new SpeechSynthesisUtterance();//ur gunna say something!!
 
         				//if step type is arrive you're at a waypoint, get waypoint info	
         				if(currentStep.type==="arrive" && notAtEnd(stepLocation, coordinateData.end)) {
-        					//get waypoint info. 
-        					console.log('you are at a waypoint');
-        					//get leg, get corresponding waypoint info index
-        					var waypointDescription = getWaypointDescription(i,walkData.landmarkDescriptions);    
- 			 				var msg = waypointDescription; 
-        					// msg.text = waypointDescription; 
+        					if(waypointsReached.waypoint.indexOf(i) === -1) {
+	        					//get waypoint info. 
+	        					console.log('you are at a waypoint');
+	        					//get leg, get corresponding waypoint info index
+	        					var waypointDescription = getWaypointDescription(i,walkData.landmarkDescriptions);    
+	 			 				var msg = waypointDescription; 
+	 			 				
+	 			 				showMsgDiv.innerHTML += '<p>' + msg + '</p>'; 
+
+	 			 				waypointsReached.waypoint.push(i); 
+	        					// msg.text = waypointDescription; 
+        					}
         				} 
         				else if(currentStep.type==="arrive" && !notAtEnd(stepLocation, coordinateData.end)) { // you're at the end
-        					// msg.text = 'walk finished'; 
-        					var msg = 'walk finished'; 
+        					if(!waypointsReached.end) {
+
+	        					// msg.text = 'walk finished'; 
+	        					var msg = 'walk finished'; 
+
+	        					showMsgDiv.innerHTML += '<p>' + msg + '</p>'; 
+
+	        					waypointsReached.end = true; 
+	        				}
         				}
-        				else if(stepLocation.join() === coordinateData.beginning) {
-        					// msg.text = 'beginning of walk'; 	
-        					var msg = 'beginning of walk'; 
+        				else if(atBeginning(stepLocation,coordinateData.beginning.split(','))) {
+        					if(!waypointsReached.start) {
+	        					// msg.text = 'beginning of walk'; 	
+	        					var msg = 'beginning of walk'; 
+
+	        					showMsgDiv.innerHTML += '<p>' + msg + '</p>'; 
+
+	        					waypointsReached.start = true; 
+        					}
         				}	
-        				else {	 // get instruction 
+        				else if(waypointsReached.steps.indexOf(i+j) === -1) {	 // get instruction 
 
         					var instruction = currentStep.instruction; 
         					//read this out 
         					// msg.text = instruction; 
-        					var msg = instruction; 
+        					var msg = instruction;
+
+        					showMsgDiv.innerHTML += '<p>' + msg + '</p>'; 
+
+        					waypointsReached.steps.push(i + j);  
         				}
-        				showMsgDiv.innerHTML += '<p>' + msg + '</p>'; 
         				//say your thang
         				// window.speechSynthesis.speak(msg);
         				//now break out of everything
@@ -371,7 +402,7 @@ function startTracking(walkData, map) {
 }
 
 function getWaypointDescription(legIndex, descriptions) {
-	debugger; 
+	
 	var infoIndex = legIndex; 
 	// var descriptions = descriptions.replace(/(?:\r)/g, '<br />');
 	var split = descriptions.split(','); 
@@ -379,20 +410,37 @@ function getWaypointDescription(legIndex, descriptions) {
 	return split[infoIndex].trim(); 
 }
 
-function notAtEnd(stepCoordinates, walkEndCoordinates) {
-	var stepCoordinatesString = stepCoordinates.join(); 
-	return (stepCoordinatesString === walkEndCoordinates) ? false : true; 
+function notAtEnd(stepCoordinates, walkEndCoordinatesString) {
+
+	stepCoordinates[0] = Number(stepCoordinates[0]).toFixed(3); //roughly at end 
+	stepCoordinates[1] = Number(stepCoordinates[1]).toFixed(3); 
+
+	walkEndCoordinates = walkEndCoordinatesString.split(','); 
+	walkEndCoordinates[0] = Number(walkEndCoordinates[0]).toFixed(3); 
+	walkEndCoordinates[1] = Number(walkEndCoordinates[1]).toFixed(3); 
+
+	return (stepCoordinates[0] === walkEndCoordinates[0] && stepCoordinates[1] === walkEndCoordinates[1]) ? false : true; 
+}
+
+function atBeginning(stepCoordinates, walkBeginningCoordinates) {
+	stepCoordinates[0] = Number(stepCoordinates[0]).toFixed(3); 
+	stepCoordinates[1] = Number(stepCoordinates[1]).toFixed(3);
+
+	walkBeginningCoordinates[0] = Number(walkBeginningCoordinates[0]).toFixed(3); 
+	walkBeginningCoordinates[1] = Number(walkBeginningCoordinates[1]).toFixed(3); 
+
+	return (stepCoordinates[0] === walkBeginningCoordinates[0] && stepCoordinates[1] === walkBeginningCoordinates[1]) ? true : false; 
 }
 
 function isClose(currentLat, currentLng, stepLat, stepLng) {
-
+	
 	//pretty crude. Check to see if coordinates match to four decimal places 
 	//in future probably want to calculate based on trajectory as well. So only counts as close if you are approaching from the right direction... 
-	roundedCurrentLat = currentLat.toFixed(4); // round to 5 decimals 
-	roundedCurrentLng = currentLng.toFixed(4); 
+	roundedCurrentLat = Number(currentLat).toFixed(3); // round to 4 decimals 
+	roundedCurrentLng = Number(currentLng).toFixed(3); 
 
-	roundedStepLat = stepLat.toFixed(4); 
-	roundedStepLng = stepLng.toFixed(4)
+	roundedStepLat = Number(stepLat).toFixed(3); 
+	roundedStepLng = Number(stepLng).toFixed(3); 
 
 	console.log('current Lat' + roundedCurrentLat + '..' + 'step lat' + roundedStepLat); 
 	console.log('current Lng' + roundedCurrentLng + '..' + 'step Lng' + roundedStepLng); 
