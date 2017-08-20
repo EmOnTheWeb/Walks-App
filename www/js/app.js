@@ -433,7 +433,7 @@ function atBeginning(stepCoordinates, walkBeginningCoordinates) {
 }
 
 function isClose(currentLat, currentLng, stepLat, stepLng) {
-	
+
 	//pretty crude. Check to see if coordinates match to four decimal places 
 	//in future probably want to calculate based on trajectory as well. So only counts as close if you are approaching from the right direction... 
 	roundedCurrentLat = Number(currentLat).toFixed(3); // round to 4 decimals 
@@ -449,7 +449,7 @@ function isClose(currentLat, currentLng, stepLat, stepLng) {
 	return (roundedCurrentLat === roundedStepLat && roundedCurrentLng === roundedStepLng) ? true: false; 
 }	
 
-
+var firstFlyTo = false; 
 var currentMarker; 
 function updateMarkerPosition(long,lat,map) { //add marker to map 
 	//delete old marker before readding for new position
@@ -460,8 +460,18 @@ function updateMarkerPosition(long,lat,map) { //add marker to map
 	.setLngLat([long,lat])
 	.addTo(map);
 
-	map.flyTo({
-        center: [long, lat]
-    });
+	console.log(map.getBounds()._ne); 
+	var mapBounds = map.getBounds(); 
+
+	var NEBound = mapBounds._ne; 
+	var SWBound = mapBounds._sw; 
+
+	//if marker is outside bounds recenter map
+	if((long > NEBound.lng || long < SWBound.lng || lat > NEBound.Lat || lat < SWBound.lat) || firstFlyTo === false) {
+		map.flyTo({
+	        center: [long, lat]
+	    });
+	    firstFlyTo = true; //want it to fly there first time round ... 
+	}
 }
 
