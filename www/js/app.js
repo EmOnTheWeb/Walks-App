@@ -44,8 +44,6 @@ function init() { //run everything in here only when device is ready
     
     startWalkBtn.addEventListener("click", function() {
 
-     	document.querySelector('.intro-page').style.display='none';
-
 	    promisedWalkDirections().then(promisedLandmarkDescriptions).then(function(walkData) {
 	    	// document.querySelector('.walk-page').style.display = 'block'; 
      		var initializedMap = generateMap(walkData.walkDirections); //return map to update marker on it
@@ -132,6 +130,8 @@ function getWalkDirections(resolve, reject) {
     var selectedValue=select.value; 
 
    	if(selectedValue !== '') {
+   		document.querySelector('.intro-page').style.display='none'; //hide first page
+   		
    		var walkName = select.options[select.selectedIndex].text; 
 
    		addWalkHeading(walkName); 
