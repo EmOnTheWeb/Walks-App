@@ -449,7 +449,7 @@ function isClose(currentLat, currentLng, stepLat, stepLng) {
 	return (roundedCurrentLat === roundedStepLat && roundedCurrentLng === roundedStepLng) ? true: false; 
 }	
 
-var firstFlyTo = false; 
+var firstFlyTo = true; 
 var currentMarker; 
 
 function updateMarkerPosition(long,lat,map) { //add marker to map 
@@ -461,18 +461,17 @@ function updateMarkerPosition(long,lat,map) { //add marker to map
 	.setLngLat([long,lat])
 	.addTo(map);
 
-
 	var mapBounds = map.getBounds(); 
 	
 	var NEBound = mapBounds._ne; 
 	var SWBound = mapBounds._sw; 
 
 	//if marker is outside bounds recenter map
-	if((long > NEBound.lng || long < SWBound.lng || lat > NEBound.lat || lat < SWBound.lat) || firstFlyTo === false) {
+	if((long > NEBound.lng || long < SWBound.lng || lat > NEBound.lat || lat < SWBound.lat) || firstFlyTo) {
 		map.flyTo({
 	        center: [long, lat]
 	    });
-	    firstFlyTo = true; //want it to fly there first time round ... 
+	    firstFlyTo = false; //want it to fly there first time round ... 
 	}
 }
 
