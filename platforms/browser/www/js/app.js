@@ -331,7 +331,7 @@ function startTracking(walkData, map) {
         		
         			//compare geoposition to step position 
         			if(isClose(currentLat, currentLng, stepLat, stepLng)) {
-        				// var msg = new SpeechSynthesisUtterance();//ur gunna say something!!
+        				var speak = new SpeechSynthesisUtterance();//ur gunna say something!!
 
         				//if step type is arrive you're at a waypoint, get waypoint info	
         				if(currentStep.type==="arrive" && !atEnd(stepLat, stepLng, coordinateData.end)) {
@@ -345,13 +345,13 @@ function startTracking(walkData, map) {
 	 			 				showMsgDiv.innerHTML += '<p>' + msg + '</p>'; 
 
 	 			 				waypointsReached.waypoint.push(i); 
-	        					// msg.text = waypointDescription; 
+	        					speak.text = waypointDescription; 
         					}
         				} 
         				else if(currentStep.type==="arrive" && atEnd(stepLat, stepLng, coordinateData.end)) { // you're at the end
         					if(!waypointsReached.end) {
 
-	        					// msg.text = 'walk finished'; 
+	        					speak.text = 'walk finished'; 
 	        					var msg = 'walk finished'; 
 
 	        					showMsgDiv.innerHTML += '<p>' + msg + '</p>'; 
@@ -361,9 +361,10 @@ function startTracking(walkData, map) {
         				}
         				else if(atBeginning(stepLat, stepLng, coordinateData.beginning)) {
         					if(!waypointsReached.start) {
-	        					// msg.text = 'beginning of walk'; 	
+	        					speak.text = 'beginning of walk'; 	
 	        					var msg = 'beginning of walk'; 
-
+	        					//read out first waypoint description
+	        					//then read out walk direction too 
 	        					showMsgDiv.innerHTML += '<p>' + msg + '</p>'; 
 
 	        					waypointsReached.start = true; 
@@ -373,7 +374,7 @@ function startTracking(walkData, map) {
 
         					var instruction = currentStep.instruction; 
         					//read this out 
-        					// msg.text = instruction; 
+        					speak.text = instruction; 
         					var msg = instruction;
 
         					showMsgDiv.innerHTML += '<p>' + msg + '</p>'; 
@@ -381,7 +382,7 @@ function startTracking(walkData, map) {
         					waypointsReached.steps.push(i + j);  
         				}
         				//say your thang
-        				// window.speechSynthesis.speak(msg);
+        				window.speechSynthesis.speak(speak);
         				//now break out of everything
         				j = legSteps.length; 
         				i = journeyLegs.length; 
