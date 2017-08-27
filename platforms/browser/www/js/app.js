@@ -451,6 +451,7 @@ function isClose(currentLat, currentLng, stepLat, stepLng) {
 
 var firstFlyTo = false; 
 var currentMarker; 
+
 function updateMarkerPosition(long,lat,map) { //add marker to map 
 	//delete old marker before readding for new position
 	if(currentMarker) {
@@ -460,14 +461,14 @@ function updateMarkerPosition(long,lat,map) { //add marker to map
 	.setLngLat([long,lat])
 	.addTo(map);
 
-	console.log(map.getBounds()._ne); 
-	var mapBounds = map.getBounds(); 
 
+	var mapBounds = map.getBounds(); 
+	
 	var NEBound = mapBounds._ne; 
 	var SWBound = mapBounds._sw; 
 
 	//if marker is outside bounds recenter map
-	if((long > NEBound.lng || long < SWBound.lng || lat > NEBound.Lat || lat < SWBound.lat) || firstFlyTo === false) {
+	if((long > NEBound.lng || long < SWBound.lng || lat > NEBound.lat || lat < SWBound.lat) || firstFlyTo === false) {
 		map.flyTo({
 	        center: [long, lat]
 	    });
