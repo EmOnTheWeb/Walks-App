@@ -416,7 +416,7 @@ function atEnd(stepLat, stepLng, walkEndCoordinatesString) {
 	walkEndLat = walkEndCoordinates[1]; 
 	walkEndLng = walkEndCoordinates[0]; 
 
-	return (Math.abs(walkEndLat - stepLat) <= 0.0005 && Math.abs(walkEndLng - stepLng) <= 0.0005) ? true: false;  
+	return (Math.abs(walkEndLat - stepLat) <= 0.00025 && Math.abs(walkEndLng - stepLng) <= 0.00025) ? true: false;  
 }
 
 function atBeginning(stepLat, stepLng, walkStartCoordinatesString) {
@@ -425,7 +425,7 @@ function atBeginning(stepLat, stepLng, walkStartCoordinatesString) {
 	walkStartLat = walkStartCoordinates[1]; 
 	walkStartLng = walkStartCoordinates[0]; 
 
-	return (Math.abs(walkStartLat - stepLat) <= 0.0005 && Math.abs(walkStartLng - stepLng) <= 0.0005) ? true: false; 
+	return (Math.abs(walkStartLat - stepLat) <= 0.00025 && Math.abs(walkStartLng - stepLng) <= 0.00025) ? true: false; 
 }
 
 function isClose(currentLat, currentLng, stepLat, stepLng) {
@@ -433,7 +433,7 @@ function isClose(currentLat, currentLng, stepLat, stepLng) {
 	// console.log(Math.abs(currentLng - stepLng)); 
 	
 	//in future probably want to calculate based on trajectory as well. So only counts as close if you are approaching from the right direction... 
-	if(Math.abs(currentLat - stepLat) <= 0.0005 && Math.abs(currentLng - stepLng) <= 0.0005) {
+	if(Math.abs(currentLat - stepLat) <= 0.00025 && Math.abs(currentLng - stepLng) <= 0.00025) {
 		
 		return true; 
 	}

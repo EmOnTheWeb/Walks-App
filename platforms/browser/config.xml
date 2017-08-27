@@ -6,13 +6,14 @@
     <feature name="Device">
         <param name="browser-package" value="Device" />
     </feature>
-    <name>Hello World</name>
+    <name>Hidden Walks</name>
     <description>
-        A blank PhoneGap app.
+        An app to narrate the London Hidden Walks series 
     </description>
-    <author email="support@phonegap.com" href="http://phonegap.com">
-        PhoneGap Team
+    <author email="emilie.dannenberg@gmail.com" href="http://emiliedannenberg.co.uk">
+        Emilie
     </author>
     <content src="index.html" />
+    <icon src="icon-london.png" />
     <access origin="*" />
 </widget>
