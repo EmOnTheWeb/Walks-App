@@ -121,8 +121,15 @@ function addWalkHeading(walkname) {
 
 	var img = new Image(); 
 	img.src = '../img/man-walking.png';
-	img.className = 'img-man-walking';  
-	page.insertBefore(img,document.querySelector('.walk-page h2')); 
+	img.className = 'img-man-walking'; 
+	
+	var p = document.createElement('p'); 
+	var pt = document.createTextNode('Walking...'); 
+	p.appendChild(pt); 	
+	
+	var header = document.querySelector('.header'); 
+	header.appendChild(p); 
+	header.appendChild(img); 
 }
 function getWalkDirections(resolve, reject) {
 
