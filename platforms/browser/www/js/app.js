@@ -449,10 +449,8 @@ function isClose(currentLat, currentLng, stepLat, stepLng) {
 	return (roundedCurrentLat === roundedStepLat && roundedCurrentLng === roundedStepLng) ? true: false; 
 }	
 
-
+var firstFlyTo = false; 
 var currentMarker; 
-var firstFlyTo = true; //first time placing marker
-var NEBound; var SWBound; 
 
 function updateMarkerPosition(long,lat,map) { //add marker to map 
 	//delete old marker before readding for new position
@@ -463,44 +461,18 @@ function updateMarkerPosition(long,lat,map) { //add marker to map
 	.setLngLat([long,lat])
 	.addTo(map);
 
-	if(firstFlyTo) {
 
+	var mapBounds = map.getBounds(); 
+	
+	var NEBound = mapBounds._ne; 
+	var SWBound = mapBounds._sw; 
+
+	//if marker is outside bounds recenter map
+	if((long > NEBound.lng || long < SWBound.lng || lat > NEBound.lat || lat < SWBound.lat) || firstFlyTo === false) {
 		map.flyTo({
 	        center: [long, lat]
 	    });
-		var mapBounds = map.getBounds(); 
-		NEBound = mapBounds._ne; 
-		SWBound = mapBounds._sw; 
-
-		firstFlyTo = false; 
-
-			console.log('north east bound is' + NEBound); 
-	console.log('north west bound is' + SWBound); 
+	    firstFlyTo = true; //want it to fly there first time round ... 
 	}
-	else { //check if marker out of bounds
-		if(long > NEBound.lng || long < SWBound.lng || lat > NEBound.lat || lat < SWBound.lat) {
-			map.flyTo({
-	        	center: [long, lat]
-	    	});
-	    	//get new bounds
-	    	var mapBounds = map.getBounds(); 
-			NEBound = mapBounds._ne; 
-			SWBound = mapBounds._sw; 
-			console.log('new bounds are' + NEBound + ' and ' + SWBound)
-		}
-	}
-
-	// var mapBounds = map.getBounds(); 
-	
-	// var NEBound = mapBounds._ne; 
-	// var SWBound = mapBounds._sw; 
-
-	// //if marker is outside bounds recenter map
-	// if((long > NEBound.lng || long < SWBound.lng || lat > NEBound.lat || lat < SWBound.lat) || firstFlyTo === false) {
-	// 	map.flyTo({
-	//         center: [long, lat]
-	//     });
-	//     firstFlyTo = true; //want it to fly there first time round ... 
-	// }
 }
 
