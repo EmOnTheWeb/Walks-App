@@ -334,7 +334,7 @@ function startTracking(walkData, map) {
         				// var msg = new SpeechSynthesisUtterance();//ur gunna say something!!
 
         				//if step type is arrive you're at a waypoint, get waypoint info	
-        				if(currentStep.type==="arrive" && notAtEnd(stepLocation, coordinateData.end)) {
+        				if(currentStep.type==="arrive" && !atEnd(stepLat, stepLng, coordinateData.end)) {
         					if(waypointsReached.waypoint.indexOf(i) === -1) {
 	        					//get waypoint info. 
 	        					console.log('you are at a waypoint');
@@ -348,7 +348,7 @@ function startTracking(walkData, map) {
 	        					// msg.text = waypointDescription; 
         					}
         				} 
-        				else if(currentStep.type==="arrive" && !notAtEnd(stepLocation, coordinateData.end)) { // you're at the end
+        				else if(currentStep.type==="arrive" && atEnd(stepLat, stepLng, coordinateData.end)) { // you're at the end
         					if(!waypointsReached.end) {
 
 	        					// msg.text = 'walk finished'; 
@@ -359,7 +359,7 @@ function startTracking(walkData, map) {
 	        					waypointsReached.end = true; 
 	        				}
         				}
-        				else if(atBeginning(stepLocation,coordinateData.beginning.split(','))) {
+        				else if(atBeginning(stepLat, stepLng, coordinateData.beginning)) {
         					if(!waypointsReached.start) {
 	        					// msg.text = 'beginning of walk'; 	
 	        					var msg = 'beginning of walk'; 
@@ -410,43 +410,35 @@ function getWaypointDescription(legIndex, descriptions) {
 	return split[infoIndex].trim(); 
 }
 
-function notAtEnd(stepCoordinates, walkEndCoordinatesString) {
-
-	stepCoordinates[0] = Number(stepCoordinates[0]).toFixed(3); //roughly at end 
-	stepCoordinates[1] = Number(stepCoordinates[1]).toFixed(3); 
-
+function atEnd(stepLat, stepLng, walkEndCoordinatesString) {
+	
 	walkEndCoordinates = walkEndCoordinatesString.split(','); 
-	walkEndCoordinates[0] = Number(walkEndCoordinates[0]).toFixed(3); 
-	walkEndCoordinates[1] = Number(walkEndCoordinates[1]).toFixed(3); 
+	walkEndLat = walkEndCoordinates[1]; 
+	walkEndLng = walkEndCoordinates[0]; 
 
-	return (stepCoordinates[0] === walkEndCoordinates[0] && stepCoordinates[1] === walkEndCoordinates[1]) ? false : true; 
+	return (Math.abs(walkEndLat - stepLat) <= 0.0005 && Math.abs(walkEndLng - stepLng) <= 0.0005) ? true: false;  
 }
 
-function atBeginning(stepCoordinates, walkBeginningCoordinates) {
-	stepCoordinates[0] = Number(stepCoordinates[0]).toFixed(3); 
-	stepCoordinates[1] = Number(stepCoordinates[1]).toFixed(3);
+function atBeginning(stepLat, stepLng, walkStartCoordinatesString) {
+	
+	walkStartCoordinates = walkStartCoordinatesString.split(','); 
+	walkStartLat = walkStartCoordinates[1]; 
+	walkStartLng = walkStartCoordinates[0]; 
 
-	walkBeginningCoordinates[0] = Number(walkBeginningCoordinates[0]).toFixed(3); 
-	walkBeginningCoordinates[1] = Number(walkBeginningCoordinates[1]).toFixed(3); 
-
-	return (stepCoordinates[0] === walkBeginningCoordinates[0] && stepCoordinates[1] === walkBeginningCoordinates[1]) ? true : false; 
+	return (Math.abs(walkStartLat - stepLat) <= 0.0005 && Math.abs(walkStartLng - stepLng) <= 0.0005) ? true: false; 
 }
 
 function isClose(currentLat, currentLng, stepLat, stepLng) {
-
-	//pretty crude. Check to see if coordinates match to four decimal places 
+	// console.log(Math.abs(currentLat - stepLat)); 
+	// console.log(Math.abs(currentLng - stepLng)); 
+	
 	//in future probably want to calculate based on trajectory as well. So only counts as close if you are approaching from the right direction... 
-	roundedCurrentLat = Number(currentLat).toFixed(3); // round to 4 decimals 
-	roundedCurrentLng = Number(currentLng).toFixed(3); 
+	if(Math.abs(currentLat - stepLat) <= 0.0005 && Math.abs(currentLng - stepLng) <= 0.0005) {
+		
+		return true; 
+	}
+	return false; 
 
-	roundedStepLat = Number(stepLat).toFixed(3); 
-	roundedStepLng = Number(stepLng).toFixed(3); 
-
-	console.log('current Lat' + roundedCurrentLat + '..' + 'step lat' + roundedStepLat); 
-	console.log('current Lng' + roundedCurrentLng + '..' + 'step Lng' + roundedStepLng); 
-
-
-	return (roundedCurrentLat === roundedStepLat && roundedCurrentLng === roundedStepLng) ? true: false; 
 }	
 
 var firstFlyTo = true; 
