@@ -62,12 +62,17 @@ body {
     width:auto;
     text-align:center;
 }
-/*.walk-page {
-    display:none; 
-}*/
+.walk-page {
+    padding:10px; 
+}
+h2 {
+    margin-top: 15px;
+    margin-bottom: 20px;
+    text-align:center; 
+}
 
 #map {   
-    width: 400px; 
+    width: 100%; 
     height:300px;
     margin:auto;  
 }

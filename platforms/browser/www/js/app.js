@@ -43,7 +43,9 @@ function init() { //run everything in here only when device is ready
 	var startWalkBtn = document.querySelector(".start-walk");
     
     startWalkBtn.addEventListener("click", function() {
-     	
+
+     	document.querySelector('.intro-page').style.display='none';
+
 	    promisedWalkDirections().then(promisedLandmarkDescriptions).then(function(walkData) {
 	    	// document.querySelector('.walk-page').style.display = 'block'; 
      		var initializedMap = generateMap(walkData.walkDirections); //return map to update marker on it
@@ -111,6 +113,19 @@ function removeExtAndUnderscore(filename) {
 	return removeUnderscore; 
 
 }
+function addWalkHeading(walkname) {
+	var h = document.createElement('h2'); 
+	var t = document.createTextNode(walkname); 
+	h.appendChild(t); 
+
+	var page = document.querySelector('.walk-page'); 
+	page.insertBefore(h,document.getElementById('map')); 
+
+	var img = new Image(); 
+	img.src = '../img/man-walking.png';
+	img.className = 'img-man-walking';  
+	page.insertBefore(img,document.querySelector('.walk-page h2')); 
+}
 function getWalkDirections(resolve, reject) {
 
     var select=document.querySelector(".choose-walk");
@@ -118,6 +133,8 @@ function getWalkDirections(resolve, reject) {
 
    	if(selectedValue !== '') {
    		var walkName = select.options[select.selectedIndex].text; 
+
+   		addWalkHeading(walkName); 
    
    		storage.get(walkName, function(walkDirections) {
    			if(walkDirections) {
