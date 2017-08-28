@@ -365,7 +365,7 @@ function startTracking(walkData, map) {
 	        					//get leg, get corresponding waypoint info index
 	        					var waypointDescription = getWaypointDescription(i,walkData.landmarkDescriptions, false);    
 	 			 				var msg = waypointDescription; 
-	 			 				
+	 			 				 
 	 			 				showMsgDiv.innerHTML += '<p>' + msg + '</p>'; 
 
 	 			 				waypointsReached.waypoint.push(i); 
@@ -390,15 +390,15 @@ function startTracking(walkData, map) {
 	        					 
 	        					var instruction = currentStep.instruction; 
 	        					
-	        					VoiceRSS.speech({
-						            key: '2cc66f53dd044ef486e9653c840c14e5 ',
-						            src: instruction,
-						            hl: 'en-gb',
-						            r: 0, 
-						            c: 'mp3',
-						            f: '44khz_16bit_stereo',
-						            ssml: false
-					        	});    
+	        					// VoiceRSS.speech({
+						        //     key: '2cc66f53dd044ef486e9653c840c14e5 ',
+						        //     src: instruction,
+						        //     hl: 'en-gb',
+						        //     r: 0, 
+						        //     c: 'mp3',
+						        //     f: '44khz_16bit_stereo',
+						        //     ssml: false
+					        	// });    
 	        					//read out first waypoint description
 	        					//then read out walk direction too 
 	        					showMsgDiv.innerHTML += '<p>' + waypointDescription + '</p>'; 
