@@ -199,7 +199,7 @@ function saveWalk(resolve, directions) {
 			delete legs[i].steps[index].duration; 
 			// legs[i].steps[index].bearing = legs[i].steps[index].geometry; 	
 			delete legs[i].steps[index].geometry; 
-			delete legs[i].steps[index].intersections; 
+			// delete legs[i].steps[index].intersections; 
 			delete legs[i].steps[index].mode; 
 			delete legs[i].steps[index].name; 
 			delete legs[i].steps[index].weight;  
