@@ -401,8 +401,18 @@ function startTracking(walkData, map) {
         					// speak.text = instruction; 
         					var msg = instruction;
 
-        					showMsgDiv.innerHTML += '<p>' + msg + '</p>'; 
+        					showMsgDiv.innerHTML += '<p>' + msg + '</p>';
 
+        					VoiceRSS.speech({
+					            key: '2cc66f53dd044ef486e9653c840c14e5 ',
+					            src: msg,
+					            hl: 'en-gb',
+					            r: 0, 
+					            c: 'mp3',
+					            f: '44khz_16bit_stereo',
+					            ssml: false
+					        });
+        					
         					waypointsReached.steps.push(i + j);  
         				}
         				//say your thang
