@@ -120,7 +120,7 @@ function addWalkHeading(walkname) {
 	page.insertBefore(h,document.getElementById('map')); 
 
 	var img = new Image(); 
-	img.src = '../img/man-walking.png';
+	img.src = './img/man-walking.png';
 	img.className = 'img-man-walking'; 
 	
 	var p = document.createElement('p'); 
