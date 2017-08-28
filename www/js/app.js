@@ -363,7 +363,7 @@ function startTracking(walkData, map) {
 	        					//get waypoint info. 
 	        					console.log('you are at a waypoint');
 	        					//get leg, get corresponding waypoint info index
-	        					var waypointDescription = getWaypointDescription(i,walkData.landmarkDescriptions);    
+	        					var waypointDescription = getWaypointDescription(i,walkData.landmarkDescriptions, false);    
 	 			 				var msg = waypointDescription; 
 	 			 				
 	 			 				showMsgDiv.innerHTML += '<p>' + msg + '</p>'; 
@@ -385,11 +385,23 @@ function startTracking(walkData, map) {
         				}
         				else if(atBeginning(stepLat, stepLng, coordinateData.beginning)) {
         					if(!waypointsReached.start) {
-	        					// speak.text = 'beginning of walk'; 	
-	        					var msg = 'beginning of walk'; 
+	        					 	    					
+	        					var waypointDescription = getWaypointDescription(i,walkData.landmarkDescriptions, true); 
+	        					 
+	        					var instruction = currentStep.instruction; 
+	        					
+	        					VoiceRSS.speech({
+						            key: '2cc66f53dd044ef486e9653c840c14e5 ',
+						            src: instruction,
+						            hl: 'en-gb',
+						            r: 0, 
+						            c: 'mp3',
+						            f: '44khz_16bit_stereo',
+						            ssml: false
+					        	});    
 	        					//read out first waypoint description
 	        					//then read out walk direction too 
-	        					showMsgDiv.innerHTML += '<p>' + msg + '</p>'; 
+	        					showMsgDiv.innerHTML += '<p>' + waypointDescription + '</p>'; 
 
 	        					waypointsReached.start = true; 
         					}
@@ -436,9 +448,14 @@ function startTracking(walkData, map) {
     ); 
 }
 
-function getWaypointDescription(legIndex, descriptions) {
+function getWaypointDescription(legIndex, descriptions, beginning) {
 	
-	var infoIndex = legIndex; 
+	if(beginning) { 
+		var infoIndex = legIndex;
+	} 
+	else {
+		var infoIndex = legIndex+1; 
+	} 
 	// var descriptions = descriptions.replace(/(?:\r)/g, '<br />');
 	var split = descriptions.split(','); 
 	
