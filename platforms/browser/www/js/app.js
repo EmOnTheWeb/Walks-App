@@ -142,7 +142,9 @@ function getWalkDirections(resolve, reject) {
    		var walkName = select.options[select.selectedIndex].text; 
 
    		addWalkHeading(walkName); 
-   
+   // 			storage.keys(function(key) {
+			// 	this.remove(walkName); 
+			// })  
    		storage.get(walkName, function(walkDirections) {
    			if(walkDirections) {
    				resolve(walkDirections); 
@@ -192,18 +194,20 @@ function saveWalk(resolve, directions) {
 
 		//steps keep maneuver, location, type 
 		for(var index=0; index<legs[i].steps.length; index++) {
-
+				 
 			delete legs[i].steps[index].distance; 
 			delete legs[i].steps[index].duration; 
+			legs[i].steps[index].bearing = legs[i].steps[index].geometry; 	
 			delete legs[i].steps[index].geometry; 
 			// delete legs[i].steps[index].intersections; 
 			delete legs[i].steps[index].mode; 
 			delete legs[i].steps[index].name; 
-			delete legs[i].steps[index].weight; 
+			delete legs[i].steps[index].weight;  
 			legs[i].steps[index].instruction = legs[i].steps[index].maneuver.instruction; 
 			legs[i].steps[index].location = legs[i].steps[index].maneuver.location; 
 			legs[i].steps[index].type = legs[i].steps[index].maneuver.type;
 			delete legs[i].steps[index].maneuver; 
+			
 		}
 	}
 
@@ -398,7 +402,7 @@ function startTracking(walkData, map) {
 						            ssml: false
 					        	});    
 	        			
-	        					showMsgDiv.innerHTML += '<p>' + waypointDescription + '</p>'; 
+	        					showMsgDiv.innerHTML += '<p>' + instruction + '</p>'; 
 
 	        					waypointsReached.start = true; 
         					}
