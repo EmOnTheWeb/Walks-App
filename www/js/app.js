@@ -374,6 +374,8 @@ function startTracking(walkData, map) {
 
 	 			 				waypointsReached.waypoint.push(i); 
 	        					
+	 			 				navigator.vibrate(2000);
+	        					
 	        					var audioNum = i+1; 
 	        					//play audio 
 	        					var audioElement = document.createElement('audio');  
