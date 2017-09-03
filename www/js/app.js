@@ -362,8 +362,8 @@ function startTracking(walkData, map) {
         				// var speak = new SpeechSynthesisUtterance();//ur gunna say something!!
 
         				//if step type is arrive you're at a waypoint, get waypoint info	
-        				if(currentStep.type==="arrive" && !atEnd(stepLat, stepLng, coordinateData.end)) {
-        					if(waypointsReached.waypoint.indexOf(i) === -1) {
+        				if(currentStep.type==="arrive" && !atEnd(stepLat, stepLng, coordinateData.end) && waypointsReached.waypoint.indexOf(i) === -1) {
+        			
 	        					//get waypoint info. 
 	        					console.log('you are at a waypoint');
 	        					//get leg, get corresponding waypoint info index
@@ -374,22 +374,20 @@ function startTracking(walkData, map) {
 
 	 			 				waypointsReached.waypoint.push(i); 
 	        					// speak.text = waypointDescription; 
-        					}
+        					
         				} 
-        				else if(currentStep.type==="arrive" && atEnd(stepLat, stepLng, coordinateData.end)) { // you're at the end
-        					if(!waypointsReached.end) {
-
+        				else if(currentStep.type==="arrive" && atEnd(stepLat, stepLng, coordinateData.end) && !waypointsReached.end) { // you're at the end
+  
 	        					// speak.text = 'walk finished'; 
 	        					var msg = 'walk finished'; 
 
 	        					showMsgDiv.innerHTML += '<p>' + msg + '</p>'; 
 
 	        					waypointsReached.end = true; 
-	        				}
+	        		
         				}
-        				else if(atBeginning(stepLat, stepLng, coordinateData.beginning)) {
-        					if(!waypointsReached.start) {
-	        					 	    					 
+        				else if(atBeginning(stepLat, stepLng, coordinateData.beginning) && !waypointsReached.start) {
+        				 	    					 
 	        					var instruction = currentStep.instruction; 
 	        					
 	        					VoiceRSS.speech({
@@ -405,28 +403,28 @@ function startTracking(walkData, map) {
 	        					showMsgDiv.innerHTML += '<p>' + instruction + '</p>'; 
 
 	        					waypointsReached.start = true; 
-        					}
+        
         				}	
         				else if(waypointsReached.steps.indexOf(i+j) === -1) {	 // get instruction 
+        					if(currentStep.type !== "arrive") { //don't let it read out useless 'you have arrived' instruction
+	        					var instruction = currentStep.instruction; 
+	        					//read this out 
+	        					var msg = instruction;
 
-        					var instruction = currentStep.instruction; 
-        					//read this out 
-        					// speak.text = instruction; 
-        					var msg = instruction;
+	        					showMsgDiv.innerHTML += '<p>' + msg + '</p>';
 
-        					showMsgDiv.innerHTML += '<p>' + msg + '</p>';
-
-        					VoiceRSS.speech({
-					            key: '2cc66f53dd044ef486e9653c840c14e5 ',
-					            src: msg,
-					            hl: 'en-gb',
-					            r: 0, 
-					            c: 'mp3',
-					            f: '44khz_16bit_stereo',
-					            ssml: false
-					        });
-        					
-        					waypointsReached.steps.push(i + j);  
+	        					VoiceRSS.speech({
+						            key: '2cc66f53dd044ef486e9653c840c14e5 ',
+						            src: msg,
+						            hl: 'en-gb',
+						            r: 0, 
+						            c: 'mp3',
+						            f: '44khz_16bit_stereo',
+						            ssml: false
+						        });
+	        					
+	        					waypointsReached.steps.push(i + j); 
+	        				} 
         				}
         				//say your thang
         				// window.speechSynthesis.speak(speak);
