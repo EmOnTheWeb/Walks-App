@@ -374,9 +374,10 @@ function startTracking(walkData, map) {
 
 	 			 				waypointsReached.waypoint.push(i); 
 	        					
+	        					var audioNum = i+1; 
 	        					//play audio 
 	        					var audioElement = document.createElement('audio');  
-									  audioElement.setAttribute('src', 'http://api-walks.emiliedannenberg.co.uk/waypoint-audio/waypoint_1.mp3');  
+									  audioElement.setAttribute('src', 'http://api-walks.emiliedannenberg.co.uk/waypoint-audio/waypoint_' + audioNum + '.mp3');  
 									  audioElement.addEventListener("load", function(){  
 									      audioElement.play();  
 									  }, true);
