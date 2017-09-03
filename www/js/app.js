@@ -383,7 +383,8 @@ function startTracking(walkData, map) {
 
 	        					showMsgDiv.innerHTML += '<p>' + msg + '</p>'; 
 
-	        					waypointsReached.end = true; 
+	        					waypointsReached.end = true;
+	        					waypointsReached.steps.push(i+j);  
 	        		
         				}
         				else if(atBeginning(stepLat, stepLng, coordinateData.beginning) && !waypointsReached.start) {
@@ -403,6 +404,7 @@ function startTracking(walkData, map) {
 	        					showMsgDiv.innerHTML += '<p>' + instruction + '</p>'; 
 
 	        					waypointsReached.start = true; 
+	        					waypointsReached.steps.push(i+j); 
         
         				}	
         				else if(waypointsReached.steps.indexOf(i+j) === -1) {	 // get instruction 
