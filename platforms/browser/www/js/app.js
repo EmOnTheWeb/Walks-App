@@ -375,7 +375,7 @@ function startTracking(walkData, map) {
 	 			 				waypointsReached.waypoint.push(i); 
 	        					
 	 			 				navigator.vibrate(2000);
-	        					
+
 	        					var audioNum = i+1; 
 	        					//play audio 
 	        					var audioElement = document.createElement('audio');  
@@ -400,6 +400,8 @@ function startTracking(walkData, map) {
         				}
         				else if(atBeginning(stepLat, stepLng, coordinateData.beginning) && !waypointsReached.start) {
         				 	    					 
+	        					navigator.vibrate(2000);
+
 	        					var instruction = currentStep.instruction; 
 	        					
 	        					VoiceRSS.speech({
