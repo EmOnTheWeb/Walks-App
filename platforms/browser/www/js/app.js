@@ -373,7 +373,15 @@ function startTracking(walkData, map) {
 	 			 				showMsgDiv.innerHTML += '<p>' + msg + '</p>'; 
 
 	 			 				waypointsReached.waypoint.push(i); 
-	        					// speak.text = waypointDescription; 
+	        					
+	        					//play audio 
+	        					var audioElement = document.createElement('audio');  
+									  audioElement.setAttribute('src', 'http://api-walks.emiliedannenberg.co.uk/waypoint-audio/waypoint_1.mp3');  
+									  audioElement.addEventListener("load", function(){  
+									      audioElement.play();  
+									  }, true);
+
+								audioElement.play(); 
         					
         				} 
         				else if(currentStep.type==="arrive" && atEnd(stepLat, stepLng, coordinateData.end) && !waypointsReached.end) { // you're at the end
@@ -465,7 +473,7 @@ function atEnd(stepLat, stepLng, walkEndCoordinatesString) {
 	walkEndLat = walkEndCoordinates[1]; 
 	walkEndLng = walkEndCoordinates[0]; 
 
-	return (Math.abs(walkEndLat - stepLat) <= 0.00025 && Math.abs(walkEndLng - stepLng) <= 0.00025) ? true: false;  
+	return (Math.abs(walkEndLat - stepLat) <= 0.0003 && Math.abs(walkEndLng - stepLng) <= 0.0003) ? true: false;  
 }
 
 function atBeginning(stepLat, stepLng, walkStartCoordinatesString) {
@@ -474,7 +482,7 @@ function atBeginning(stepLat, stepLng, walkStartCoordinatesString) {
 	walkStartLat = walkStartCoordinates[1]; 
 	walkStartLng = walkStartCoordinates[0]; 
 
-	return (Math.abs(walkStartLat - stepLat) <= 0.00025 && Math.abs(walkStartLng - stepLng) <= 0.00025) ? true: false; 
+	return (Math.abs(walkStartLat - stepLat) <= 0.0003 && Math.abs(walkStartLng - stepLng) <= 0.0003) ? true: false; 
 }
 
 function isClose(currentLat, currentLng, stepLat, stepLng) {
@@ -482,7 +490,7 @@ function isClose(currentLat, currentLng, stepLat, stepLng) {
 	// console.log(Math.abs(currentLng - stepLng)); 
 	
 	//in future probably want to calculate based on trajectory as well. So only counts as close if you are approaching from the right direction... 
-	if(Math.abs(currentLat - stepLat) <= 0.00025 && Math.abs(currentLng - stepLng) <= 0.00025) {
+	if(Math.abs(currentLat - stepLat) <= 0.0003 && Math.abs(currentLng - stepLng) <= 0.0003) {
 		
 		return true; 
 	}
