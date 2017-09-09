@@ -46,8 +46,9 @@ function init() { //run everything in here only when device is ready
 
 
     	getWalkDetails().then(function(walkData) {
-	    	console.log(walkData); 
-     		var initializedMap = generateMap(walkData); //return map to update marker on it
+	  		var data = JSON.parse(walkData.value); 
+
+     		var initializedMap = generateMap(data.plot); //return map to update marker on it
      		startTracking(walkData, initializedMap); 
 	    }); 
 	    // promisedWalkDirections().then(promisedLandmarkDescriptions).then(function(walkData) {
@@ -89,9 +90,7 @@ var getWalkDetails = function() {
 				    	if (xhr.readyState == XMLHttpRequest.DONE) { 
 				    		if(xhr.status===200) {
 				        		var walkDetails = xhr.responseText; 
-				        		console.log(walkDetails);
-
-
+				       
 				        		storage.save({ key : walkName, 
 								   value : walkDetails
 								}, function(doc){	
@@ -254,8 +253,7 @@ function error(status) {
 }
 
 function generateMap(coordinateInfo) {
-	startCoordinateString = coordinateInfo.value.beginning; 
-	startCoordinateArray = startCoordinateString.split(','); //get it into its proper format
+	
 
 	mapboxgl.accessToken = 'pk.eyJ1IjoiZW1pbGllZGFubmVuYmVyZyIsImEiOiJjaXhmOTB6ZnowMDAwMnVzaDVkcnpsY2M1In0.33yDwUq670jHD8flKjzqxg';
 	var map = new mapboxgl.Map({
