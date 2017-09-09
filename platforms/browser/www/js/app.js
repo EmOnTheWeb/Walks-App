@@ -11,7 +11,7 @@ storage.keys('keys.forEach(console.log)');
 
 function init() { //run everything in here only when device is ready
 
-	var requestUri = 'http://localhost:8888/list-walks'; 
+	var requestUri = 'http://api-walks.emiliedannenberg.co.uk/list-walks'; 
 
 	var xhr = new XMLHttpRequest();
 	    
@@ -44,42 +44,38 @@ function init() { //run everything in here only when device is ready
     
     startWalkBtn.addEventListener("click", function() {
 
-
-    	getWalkDetails().then(function(walkData) {
-	    	console.log(walkData); 
-     		var initializedMap = generateMap(walkData); //return map to update marker on it
+	    promisedWalkDirections().then(promisedLandmarkDescriptions).then(function(walkData) {
+	    	// document.querySelector('.walk-page').style.display = 'block'; 
+     		var initializedMap = generateMap(walkData.walkDirections); //return map to update marker on it
      		startTracking(walkData, initializedMap); 
 	    }); 
-	    // promisedWalkDirections().then(promisedLandmarkDescriptions).then(function(walkData) {
-	    // 	// document.querySelector('.walk-page').style.display = 'block'; 
-     // 		var initializedMap = generateMap(walkData.walkDirections); //return map to update marker on it
-     // 		startTracking(walkData, initializedMap); 
-	    // }); 
   	});   	
 }
 
-var getWalkDetails = function() {
-	var promise = new Promise(function(resolve,reject) {
+var promisedWalkDirections = function() {
+	var promise = new Promise(getWalkDirections);
+	return promise; 
+};
 
+var promisedLandmarkDescriptions = function(walkDirections) {
+	var promise = new Promise(function(resolve, reject) {
 		var select=document.querySelector(".choose-walk");
     	var selectedValue=select.value; 
+    	
+    	if(selectedValue !== '') {
+   			var walkName = select.options[select.selectedIndex].text;
+   // 			storage.keys(function(key) {
+			// 	this.remove(walkName+'-landmarks'); 
+			// })  
 
-	   	if(selectedValue !== '') {
-	   		document.querySelector('.intro-page').style.display='none'; //hide first page
-	   		
-	   		var walkName = select.options[select.selectedIndex].text; 
+   			storage.get(walkName + '-landmarks', function(landmarkDescriptions) {
 
-	   		addWalkHeading(walkName); 
-	   			storage.keys(function(key) {
-					this.remove(walkName); 
-				})  
-	   		storage.get(walkName, function(walkDetails) {
-	   			if(walkDetails) {
-	   				resolve(walkDetails); 
-	   			} else {
-	   			
-				    requestUri = 'http://localhost:8888/get-walk-details/'+selectedValue; 
-
+   				if(landmarkDescriptions) {
+   					resolve({walkDirections: walkDirections, landmarkDescriptions: landmarkDescriptions.value.descriptions}); 
+   				} else {
+   					//make the request to get the descriptions
+   					requestUri = 'http://api-walks.emiliedannenberg.co.uk/get-landmarks/'+selectedValue; 
+   				
 					var xhr = new XMLHttpRequest();
 					    
 					xhr.open('GET',requestUri, true);
@@ -88,78 +84,25 @@ var getWalkDetails = function() {
 					xhr.onreadystatechange = function() {
 				    	if (xhr.readyState == XMLHttpRequest.DONE) { 
 				    		if(xhr.status===200) {
-				        		var walkDetails = xhr.responseText; 
-				        		console.log(walkDetails);
-
-
-				        		storage.save({ key : walkName, 
-								   value : walkDetails
-								}, function(doc){	
-									console.log('walk saved locally'); 
+				        		var descriptions = xhr.responseText;   
+				        		//save descriptions  
+				        		storage.save({ key : walkName + '-landmarks', 
+										value : {	descriptions: descriptions }
+									}, function(doc){	
 								});
-	
-								resolve({ 
-									key : walkName, 
-							   		value : walkDetails				
-							   	});  
+								console.log('landmark descriptions saved locally!'); 
+								resolve({walkDirections: walkDirections, landmarkDescriptions: descriptions})
 				        	} else {
 				        		reject(xhr.status); 
 				        	}
 				    	}
 					}
-				}
-			}); 
-		}
+   				}
+   			}); 
+   		}
 	}); 
 	return promise; 
-}
-
-// var promisedLandmarkDescriptions = function(walkDirections) {
-// 	var promise = new Promise(function(resolve, reject) {
-// 		var select=document.querySelector(".choose-walk");
-//     	var selectedValue=select.value; 
-    	
-//     	if(selectedValue !== '') {
-//    			var walkName = select.options[select.selectedIndex].text;
-//    			storage.keys(function(key) {
-// 				this.remove(walkName+'-landmarks'); 
-// 			})  
-
-//    			storage.get(walkName + '-landmarks', function(landmarkDescriptions) {
-
-//    				if(landmarkDescriptions) {
-//    					resolve({walkDirections: walkDirections, landmarkDescriptions: landmarkDescriptions.value.descriptions}); 
-//    				} else {
-//    					//make the request to get the descriptions
-//    					requestUri = 'http://localhost:8888/get-landmarks/'+selectedValue; 
-//    					console.log('get landmarks with ' + selectedValue); 
-// 					var xhr = new XMLHttpRequest();
-					    
-// 					xhr.open('GET',requestUri, true);
-// 					xhr.send(null);  
-
-// 					xhr.onreadystatechange = function() {
-// 				    	if (xhr.readyState == XMLHttpRequest.DONE) { 
-// 				    		if(xhr.status===200) {
-// 				        		var descriptions = xhr.responseText;   
-// 				        		//save descriptions  
-// 				        		storage.save({ key : walkName + '-landmarks', 
-// 										value : {	descriptions: descriptions }
-// 									}, function(doc){	
-// 								});
-// 								console.log('landmark descriptions saved locally!'); 
-// 								resolve({walkDirections: walkDirections, landmarkDescriptions: descriptions})
-// 				        	} else {
-// 				        		reject(xhr.status); 
-// 				        	}
-// 				    	}
-// 					}
-//    				}
-//    			}); 
-//    		}
-// 	}); 
-// 	return promise; 
-// } 
+} 
 
 function removeExtAndUnderscore(filename) {
 
@@ -188,66 +131,104 @@ function addWalkHeading(walkname) {
 	header.appendChild(p); 
 	header.appendChild(img); 
 }
+function getWalkDirections(resolve, reject) {
 
-// function saveWalk(resolve, directions) {
+    var select=document.querySelector(".choose-walk");
+    var selectedValue=select.value; 
+
+   	if(selectedValue !== '') {
+   		document.querySelector('.intro-page').style.display='none'; //hide first page
+   		
+   		var walkName = select.options[select.selectedIndex].text; 
+
+   		addWalkHeading(walkName); 
+   // 			storage.keys(function(key) {
+			// 	this.remove(walkName); 
+			// })  
+   		storage.get(walkName, function(walkDirections) {
+   			if(walkDirections) {
+   				resolve(walkDirections); 
+   			} else {
+			    requestUri = 'http://api-walks.emiliedannenberg.co.uk/get-directions/'+selectedValue; 
+
+				var xhr = new XMLHttpRequest();
+				    
+				xhr.open('GET',requestUri, true);
+				xhr.send(null);  
+
+				xhr.onreadystatechange = function() {
+			    	if (xhr.readyState == XMLHttpRequest.DONE) { 
+			    		if(xhr.status===200) {
+			        		var directions = xhr.responseText;   
+			        		saveWalk(resolve, directions);  
+			        	} else {
+			        		reject(xhr.status); 
+			        	}
+			    	}
+				}
+			}
+		}); 
+	}
+}
+function saveWalk(resolve, directions) {
 	
-// 	directions = JSON.parse(directions); 
-// 	var route = directions.routes[0]; 
-// 	var legs = route.legs; //a leg is a route between two waypoints 	
+	directions = JSON.parse(directions); 
+	var route = directions.routes[0]; 
+	var legs = route.legs; //a leg is a route between two waypoints 	
 
-// 	var select = document.querySelector(".choose-walk");  
-// 	var walkName = select.options[select.selectedIndex].text; 
+	var select = document.querySelector(".choose-walk");  
+	var walkName = select.options[select.selectedIndex].text; 
 
-// 	//walk start and end coordinates
-// 	var startCoordinate = directions.waypoints[0].location.join(); 
-// 	var endCoordinate = directions.waypoints[directions.waypoints.length-1].location.join(); 
+	//walk start and end coordinates
+	var startCoordinate = directions.waypoints[0].location.join(); 
+	var endCoordinate = directions.waypoints[directions.waypoints.length-1].location.join(); 
 
-// 	var legs = directions.routes[0].legs; 
+	var legs = directions.routes[0].legs; 
 
-// 	for(var i=0; i<legs.length; i++) {
-// 		//remove properties you don't need 
-// 		delete legs[i].distance; 
-// 		delete legs[i].duration; 
-// 		delete legs[i].summary; 
-// 		delete legs[i].weight; 
+	for(var i=0; i<legs.length; i++) {
+		//remove properties you don't need 
+		delete legs[i].distance; 
+		delete legs[i].duration; 
+		delete legs[i].summary; 
+		delete legs[i].weight; 
 
-// 		//steps keep maneuver, location, type 
-// 		for(var index=0; index<legs[i].steps.length; index++) {
+		//steps keep maneuver, location, type 
+		for(var index=0; index<legs[i].steps.length; index++) {
 				 
-// 			delete legs[i].steps[index].distance; 
-// 			delete legs[i].steps[index].duration; 
-// 			// legs[i].steps[index].bearing = legs[i].steps[index].geometry; 	
-// 			delete legs[i].steps[index].geometry; 
-// 			// delete legs[i].steps[index].intersections; 
-// 			delete legs[i].steps[index].mode; 
-// 			delete legs[i].steps[index].name; 
-// 			delete legs[i].steps[index].weight;  
-// 			legs[i].steps[index].instruction = legs[i].steps[index].maneuver.instruction; 
-// 			legs[i].steps[index].location = legs[i].steps[index].maneuver.location; 
-// 			legs[i].steps[index].type = legs[i].steps[index].maneuver.type;
-// 			delete legs[i].steps[index].maneuver; 
+			delete legs[i].steps[index].distance; 
+			delete legs[i].steps[index].duration; 
+			// legs[i].steps[index].bearing = legs[i].steps[index].geometry; 	
+			delete legs[i].steps[index].geometry; 
+			// delete legs[i].steps[index].intersections; 
+			delete legs[i].steps[index].mode; 
+			delete legs[i].steps[index].name; 
+			delete legs[i].steps[index].weight;  
+			legs[i].steps[index].instruction = legs[i].steps[index].maneuver.instruction; 
+			legs[i].steps[index].location = legs[i].steps[index].maneuver.location; 
+			legs[i].steps[index].type = legs[i].steps[index].maneuver.type;
+			delete legs[i].steps[index].maneuver; 
 			
-// 		}
-// 	}
+		}
+	}
 
-// 	storage.save({ key : walkName, 
-// 				   value : {
-// 				   		beginning: startCoordinate,
-// 				   		end : endCoordinate,
-// 				   		legs : legs
-// 				   }
-// 				}, function(doc){	
-// 		console.log('walk saved locally'); 
-// 	});
+	storage.save({ key : walkName, 
+				   value : {
+				   		beginning: startCoordinate,
+				   		end : endCoordinate,
+				   		legs : legs
+				   }
+				}, function(doc){	
+		console.log('walk saved locally'); 
+	});
 	
-// 	resolve({ key : walkName, 
-// 				   value : {
-// 				   		beginning: startCoordinate,
-// 				   		end : endCoordinate,
-// 				   		legs : legs
-// 				   }
-// 				}); 	
-//   }
+	resolve({ key : walkName, 
+				   value : {
+				   		beginning: startCoordinate,
+				   		end : endCoordinate,
+				   		legs : legs
+				   }
+				}); 	
+  }
 
 function error(status) {
 	console.log('failed with status code' + status); 
@@ -280,7 +261,7 @@ function generateMap(coordinateInfo) {
 			}
 		}
 	}
-	console.log('route cooordinates are' + typeof routeCoordinates); 
+	console.log(routeCoordinates); 
 
 	map.on('load', function () {
 
@@ -311,22 +292,22 @@ function generateMap(coordinateInfo) {
 	return map; 
 }
 
-// function getLandmarkDescriptions(walkName) {
+function getLandmarkDescriptions(walkName) {
 
-// 	var requestUri = 'http://localhost:8888/getLandmarkDescriptions/'+ walkName; 
+	var requestUri = 'http://api-walks.emiliedannenberg.co.uk/getLandmarkDescriptions/'+ walkName; 
 
-// 	var xhr = new XMLHttpRequest();
+	var xhr = new XMLHttpRequest();
 	    
-// 	xhr.open('GET',requestUri, true);
-// 	xhr.send(null);  
+	xhr.open('GET',requestUri, true);
+	xhr.send(null);  
 
-// 	xhr.onreadystatechange = function() {
-// 	    if (xhr.readyState == XMLHttpRequest.DONE) { 
-// 	        var descriptions = xhr.responseText;
-// 	        saveLandmarkDescriptions(descriptions);        
-// 	    }
-// 	}
-// }
+	xhr.onreadystatechange = function() {
+	    if (xhr.readyState == XMLHttpRequest.DONE) { 
+	        var descriptions = xhr.responseText;
+	        saveLandmarkDescriptions(descriptions);        
+	    }
+	}
+}
 
 var waypointsReached = {  //object to track whether you've already hit a waypoint
 	start: false, 
@@ -402,7 +383,7 @@ function startTracking(walkData, map) {
 
 	        					//play audio 
 	        					var audioElement = document.createElement('audio');  
-									  audioElement.setAttribute('src', 'http://localhost:8888/waypoint-audio/' + audioDirectoryName + '/' + 'waypoint_' + audioNum + '.mp3');  
+									  audioElement.setAttribute('src', 'http://api-walks.emiliedannenberg.co.uk/waypoint-audio/' + audioDirectoryName + '/' + 'waypoint_' + audioNum + '.mp3');  
 									  audioElement.addEventListener("load", function(){  
 									      audioElement.play();  
 									  }, true);
