@@ -46,7 +46,7 @@ function init() { //run everything in here only when device is ready
 
 	    promisedWalkDirections().then(promisedLandmarkDescriptions).then(function(walkData) {
 	    	// document.querySelector('.walk-page').style.display = 'block'; 
-     		var initializedMap = generateMap(walkData.walkDirections); //return map to update marker on it
+     		var initializedMap = generateMap(walkData); //return map to update marker on it
      		startTracking(walkData, initializedMap); 
 	    }); 
   	});   	
@@ -142,9 +142,9 @@ function getWalkDirections(resolve, reject) {
    		var walkName = select.options[select.selectedIndex].text; 
 
    		addWalkHeading(walkName); 
-   // 			storage.keys(function(key) {
-			// 	this.remove(walkName); 
-			// })  
+   			storage.keys(function(key) {
+				this.remove(walkName); 
+			})  
    		storage.get(walkName, function(walkDirections) {
    			if(walkDirections) {
    				resolve(walkDirections); 
@@ -206,6 +206,7 @@ function saveWalk(resolve, directions) {
 			legs[i].steps[index].instruction = legs[i].steps[index].maneuver.instruction; 
 			legs[i].steps[index].location = legs[i].steps[index].maneuver.location; 
 			legs[i].steps[index].type = legs[i].steps[index].maneuver.type;
+
 			delete legs[i].steps[index].maneuver; 
 			
 		}
@@ -234,7 +235,9 @@ function error(status) {
 	console.log('failed with status code' + status); 
 }
 
-function generateMap(coordinateInfo) {
+function generateMap(walkData) {
+
+	coordinateInfo = walkData.walkDirections; 
 	startCoordinateString = coordinateInfo.value.beginning; 
 	startCoordinateArray = startCoordinateString.split(','); //get it into its proper format
 
@@ -250,10 +253,16 @@ function generateMap(coordinateInfo) {
 	var routeLegs = coordinateInfo.value.legs; 
 	var routeCoordinates = []; 
 
+	var waypointCoordinates = []; 
+
 	for(var i=0;i<routeLegs.length;i++) {
 		
 		var legSteps = routeLegs[i].steps; 
 		for(var index=0; index< legSteps.length; index++) {
+
+			if(index === legSteps.length -1 && legSteps[index].type === 'arrive' && i !== routeLegs.length -1) { 
+				waypointCoordinates.push(legSteps[index].location); 
+			}
 			var stepIntersections = legSteps[index].intersections; 
 			for(var inter=0; inter< stepIntersections.length; inter++) {
 				var intersectionCoordinate=stepIntersections[inter].location; 
@@ -261,7 +270,6 @@ function generateMap(coordinateInfo) {
 			}
 		}
 	}
-	console.log(routeCoordinates); 
 
 	map.on('load', function () {
 
@@ -284,12 +292,41 @@ function generateMap(coordinateInfo) {
 	            "line-cap": "round"
 	        },
 	        "paint": {
-	            "line-color": "#888",
-	            "line-width": 8
+	            "line-color": "#d66",
+	            "line-width": 4
 	        }
 	    });
 	});
+	//pass in the landmark descriptions to bind the click events... 
+	addWaypointsToMap(waypointCoordinates,map); 
+
 	return map; 
+}
+
+function addWaypointsToMap(waypointCoordinates,map) {
+
+	waypointCoordinates.forEach(function(coordinates) {
+	    // create a DOM element for the marker
+	    var el = document.createElement('div');
+	    el.className = 'marker'; 
+	    el.style.width = '10px';
+	    el.style.height = '10px';
+	    el.style.backgroundImage = 'url(img/icon-marker.png)'
+
+	    el.addEventListener('click', function() {
+	        window.alert('hi');
+	    });
+
+	    // add marker to map
+	    new mapboxgl.Marker(el)
+	        .setLngLat(coordinates)
+	        .addTo(map);
+	});
+
+
+
+
+
 }
 
 function getLandmarkDescriptions(walkName) {
