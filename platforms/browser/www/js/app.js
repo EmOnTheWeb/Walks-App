@@ -119,17 +119,17 @@ function addWalkHeading(walkname) {
 	var page = document.querySelector('.walk-page'); 
 	page.insertBefore(h,document.getElementById('map')); 
 
-	var img = new Image(); 
-	img.src = './img/man-walking.png';
-	img.className = 'img-man-walking'; 
+	// var img = new Image(); 
+	// img.src = './img/man-walking.png';
+	// img.className = 'img-man-walking'; 
 	
-	var p = document.createElement('p'); 
-	var pt = document.createTextNode('Walking...'); 
-	p.appendChild(pt); 	
+	// var p = document.createElement('p'); 
+	// var pt = document.createTextNode('Walking...'); 
+	// p.appendChild(pt); 	
 	
-	var header = document.querySelector('.header'); 
-	header.appendChild(p); 
-	header.appendChild(img); 
+	// var header = document.querySelector('.header'); 
+	// header.appendChild(p); 
+	// header.appendChild(img); 
 }
 function getWalkDirections(resolve, reject) {
 
@@ -138,6 +138,7 @@ function getWalkDirections(resolve, reject) {
 
    	if(selectedValue !== '') {
    		document.querySelector('.intro-page').style.display='none'; //hide first page
+   		document.querySelector('.walk-page').style.display = 'block'; //show walk page
    		
    		var walkName = select.options[select.selectedIndex].text; 
 
@@ -248,7 +249,7 @@ function generateMap(walkData) {
 	    center: startCoordinateArray,
 	    zoom: 15
 	});
-
+	document.querySelector('.loading-icon').style.display = "none"; 
 	//get all step intersection coordinates to plot route. more intersection coordinates means more accurate route plotting
 	var routeLegs = coordinateInfo.value.legs; 
 	var routeCoordinates = []; 
