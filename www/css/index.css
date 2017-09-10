@@ -141,6 +141,12 @@ h2 {
     font-size: 16px;
     text-transform: none;
 }
+.waypoint-page {
+    display:none; 
+}
+.waypoint-text {
+    padding:10px; 
+}
 @media all and (orientation:landscape) {
     #map {
         max-height:283px; 

@@ -64,9 +64,9 @@ var promisedLandmarkDescriptions = function(walkDirections) {
     	
     	if(selectedValue !== '') {
    			var walkName = select.options[select.selectedIndex].text;
-   // 			storage.keys(function(key) {
-			// 	this.remove(walkName+'-landmarks'); 
-			// })  
+   			storage.keys(function(key) {
+				this.remove(walkName+'-landmarks'); 
+			})  
 
    			storage.get(walkName + '-landmarks', function(landmarkDescriptions) {
 
@@ -351,9 +351,6 @@ var waypointsReached = {  //object to track whether you've already hit a waypoin
 	steps: []
 }
 
-
-
-var showMsgDiv = document.querySelector(".waypoint-text");
 function startTracking(walkData, map) {
 	// var time = 0; 
 	console.log(walkData); 
@@ -403,8 +400,14 @@ function startTracking(walkData, map) {
 	        					console.log('you are at a waypoint');
 	        					//get leg, get corresponding waypoint info index
 	        					var waypointDescription = getWaypointDescription(i,walkData.landmarkDescriptions);    
-	 			 				var msg = waypointDescription; 
-	 			 				 
+
+	 			 				var msg = waypointDescription.description; 
+	 			 				document.querySelector('.walk-page').style.display="none"; 
+	 			 				document.querySelector('.waypoint-page').style.display="block"; 
+
+
+	 			 				document.querySelector(".waypoint-name").innerHTML = waypointDescription.name; 
+	 			 				var showMsgDiv = document.querySelector(".waypoint-text");
 	 			 				showMsgDiv.innerHTML += '<p>' + msg + '</p>'; 
 
 	 			 				waypointsReached.waypoint.push(i); 
@@ -418,13 +421,14 @@ function startTracking(walkData, map) {
 
 	        					//play audio 
 	        					var audioElement = document.createElement('audio');  
-									  audioElement.setAttribute('src', 'http://api-walks.emiliedannenberg.co.uk/waypoint-audio/' + audioDirectoryName + '/' + 'waypoint_' + audioNum + '.mp3');  
-									  audioElement.addEventListener("load", function(){  
-									      audioElement.play();  
-									  }, true);
+	        						audioElement.setAttribute('controls','controls'); 
+								  audioElement.setAttribute('src', 'http://api-walks.emiliedannenberg.co.uk/waypoint-audio/' + audioDirectoryName + '/' + 'waypoint_' + audioNum + '.mp3');  
+								  audioElement.addEventListener("load", function(){  
+								      audioElement.play();  
+								  }, true);
 
 								audioElement.play(); 
-        					
+								document.querySelector('.waypoint-page').appendChild(audioElement); 	
         				} 
         				else if(currentStep.type==="arrive" && atEnd(stepLat, stepLng, coordinateData.end) && !waypointsReached.end) { // you're at the end
   
@@ -507,8 +511,12 @@ function getWaypointDescription(legIndex, descriptions) {
 
 	// var descriptions = descriptions.replace(/(?:\r)/g, '<br />');
 	var split = descriptions.split(','); 
+
+	var nameDescription = split[infoIndex].trim(); 
+	var name = nameDescription.split(':')[0].trim(); 
+	var description = nameDescription.split(':')[1].trim(); 
 	
-	return split[infoIndex].trim(); 
+	return {name: name, description:description}; 
 }
 
 function atEnd(stepLat, stepLng, walkEndCoordinatesString) {
