@@ -350,7 +350,40 @@ var waypointsReached = {  //object to track whether you've already hit a waypoin
 	waypoint: [],
 	steps: []
 }
+function buildWaypointPage(waypointDescription) {
+	var msg = waypointDescription.description; 
+	document.querySelector('.walk-page').style.display="none"; 
+	document.querySelector('.waypoint-page').style.display="block"; 
 
+	document.querySelector(".waypoint-name").innerHTML = waypointDescription.name + '<span>&#8617;</span>'; 
+	
+	document.querySelector(".waypoint-name span").addEventListener("click", function() {
+		document.querySelector('.waypoint-page').style.display="none"; 
+		document.querySelector('.walk-page').style.display="block"; 
+		document.querySelector('audio').pause(); 
+	}); 
+
+	var showMsgDiv = document.querySelector(".waypoint-text");
+
+	var fileName = waypointDescription.name.toLowerCase().replace(/\s/g,'_'); 
+	for(var i=0; i<5 ; i++) {
+		(function(different) {
+			src = 'http://api-walks.emiliedannenberg.co.uk/landmark_descriptions/images/' + fileName + '_' + (different+1) + '.png';  
+		
+			var img = new Image();
+
+			img.onload = function() {
+			   console.log('a success with url' + src);  
+			};
+		  	img.onerror = function() {
+		    	console.error(src); 
+		  	};
+		  	img.src = src; // fires off loading of image
+		})(i); 
+	}
+
+	showMsgDiv.innerHTML += '<p>' + msg + '</p>'; 
+}
 function startTracking(walkData, map) {
 	// var time = 0; 
 	console.log(walkData); 
@@ -400,16 +433,8 @@ function startTracking(walkData, map) {
 	        					console.log('you are at a waypoint');
 	        					//get leg, get corresponding waypoint info index
 	        					var waypointDescription = getWaypointDescription(i,walkData.landmarkDescriptions);    
-
-	 			 				var msg = waypointDescription.description; 
-	 			 				document.querySelector('.walk-page').style.display="none"; 
-	 			 				document.querySelector('.waypoint-page').style.display="block"; 
-
-
-	 			 				document.querySelector(".waypoint-name").innerHTML = waypointDescription.name; 
-	 			 				var showMsgDiv = document.querySelector(".waypoint-text");
-	 			 				showMsgDiv.innerHTML += '<p>' + msg + '</p>'; 
-
+	        					buildWaypointPage(waypointDescription); 
+	 			 				
 	 			 				waypointsReached.waypoint.push(i); 
 	        					
 	 			 				navigator.vibrate(2000);
