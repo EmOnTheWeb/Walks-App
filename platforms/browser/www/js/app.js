@@ -309,10 +309,12 @@ function addWaypointsToMap(waypointCoordinates,map) {
 	waypointCoordinates.forEach(function(coordinates) {
 	    // create a DOM element for the marker
 	    var el = document.createElement('div');
-	    el.className = 'marker'; 
-	    el.style.width = '10px';
-	    el.style.height = '10px';
-	    el.style.backgroundImage = 'url(img/icon-marker.png)'
+	    el.className = 'waypoint-markers'; 
+	    // el.style.width = '10px';
+	    // el.style.height = '25px';
+	    // el.style.backgroundImage = 'url(img/icon-marker.png)'; 
+	    // el.style.backgroundSize = 'contain'; 
+	    // el.style.backgroundColor = 'transparent'; 
 
 	    el.addEventListener('click', function() {
 	        window.alert('hi');
@@ -323,11 +325,6 @@ function addWaypointsToMap(waypointCoordinates,map) {
 	        .setLngLat(coordinates)
 	        .addTo(map);
 	});
-
-
-
-
-
 }
 
 function getLandmarkDescriptions(walkName) {
@@ -553,6 +550,7 @@ function updateMarkerPosition(long,lat,map) { //add marker to map
 	if(currentMarker) {
 		currentMarker.remove(); 
 	}
+
 	currentMarker = new mapboxgl.Marker()
 	.setLngLat([long,lat])
 	.addTo(map);
