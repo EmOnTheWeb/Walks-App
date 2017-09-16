@@ -359,7 +359,16 @@ function imageExists(imageUrl) {
     return http.status != 404;
 }
 function buildWaypointPage(waypointDescription) {
+	
 	var msg = waypointDescription.description; 
+	var showMsgDiv = document.querySelector(".waypoint-text");
+
+	//clear up waypoint page before showing
+	showMsgDiv.innerHTML = ''; 
+	var slider = document.querySelector('.slider'); 
+	if(slider) { 
+		slider.parentNode.removeChild(slider); 
+	}
 	document.querySelector('.walk-page').style.display="none"; 
 	document.querySelector('.waypoint-page').style.display="block"; 
 
@@ -370,9 +379,6 @@ function buildWaypointPage(waypointDescription) {
 		document.querySelector('.walk-page').style.display="block"; 
 		document.querySelector('audio').pause(); 
 	}); 
-
-	var showMsgDiv = document.querySelector(".waypoint-text");
-	showMsgDiv.innerHTML = ''; 
 
 	var fileName = waypointDescription.name.toLowerCase().replace(/\s/g,'_'); 
 
@@ -552,8 +558,7 @@ function startTracking(walkData, map) {
         			}
         			else { console.log('not close really'); 
 
-        				//empty and close waypoint page
-        				document.querySelector('.waypoint-page').innerHTML=''; 
+        				//empty and close waypoint page 
         				document.querySelector('.waypoint-page').style.display="none";
         				document.querySelector('.walk-page').style.display="block"; 	 
         			}
