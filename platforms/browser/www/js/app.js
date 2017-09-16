@@ -66,9 +66,9 @@ var promisedLandmarkDescriptions = function(walkDirections) {
     	
     	if(selectedValue !== '') {
    			var walkName = select.options[select.selectedIndex].text;
-   			storage.keys(function(key) {
-				this.remove(walkName+'-landmarks'); 
-			})  
+   // 			storage.keys(function(key) {
+			// 	this.remove(walkName+'-landmarks'); 
+			// })  
 
    			storage.get(walkName + '-landmarks', function(landmarkDescriptions) {
 
@@ -145,9 +145,9 @@ function getWalkDirections(resolve, reject) {
    		var walkName = select.options[select.selectedIndex].text; 
 
    		addWalkHeading(walkName); 
-   			storage.keys(function(key) {
-				this.remove(walkName); 
-			})  
+   // 			storage.keys(function(key) {
+			// 	this.remove(walkName); 
+			// })  
    		storage.get(walkName, function(walkDirections) {
    			if(walkDirections) {
    				resolve(walkDirections); 
