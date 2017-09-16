@@ -570,8 +570,8 @@ function startTracking(walkData, map) {
         			else { console.log('not close really'); 
 
         				//empty and close waypoint page 
-        				document.querySelector('.waypoint-page').style.display="none";
-        				document.querySelector('.walk-page').style.display="block"; 	 
+        				// document.querySelector('.waypoint-page').style.display="none";
+        				// document.querySelector('.walk-page').style.display="block"; 	 
         			}
 
         		}
