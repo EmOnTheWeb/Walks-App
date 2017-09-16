@@ -144,6 +144,7 @@ h2.waypoint-name span {
     height: 30px;
     border: none;
     margin-top: -30px;
+    cursor:pointer; 
 }
 .waypoint-text {
     margin: auto;

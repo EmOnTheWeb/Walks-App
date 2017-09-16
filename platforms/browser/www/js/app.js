@@ -362,7 +362,6 @@ function imageExists(imageUrl) {
 }
 function clearWaypointPage() {
 	//clear up waypoint page before showing
-	showMsgDiv.innerHTML = ''; 
 	var slider = document.querySelector('.slider'); 
 	if(slider) { 
 		slider.parentNode.removeChild(slider); 
@@ -376,12 +375,13 @@ function buildWaypointPage(waypointDescription) {
 	
 	var msg = waypointDescription.description; 
 	var showMsgDiv = document.querySelector(".waypoint-text");
+	document.querySelector(".waypoint-name").innerHTML = waypointDescription.name + '<span>&#8617;</span>'; 
+	showMsgDiv.innerHTML = '<p>' + msg + '</p>'; 
+
 	clearWaypointPage(); 
-	
+
 	document.querySelector('.walk-page').style.display="none"; 
 	document.querySelector('.waypoint-page').style.display="block"; 
-
-	document.querySelector(".waypoint-name").innerHTML = waypointDescription.name + '<span>&#8617;</span>'; 
 	
 	document.querySelector(".waypoint-name span").addEventListener("click", function() {
 		document.querySelector('.waypoint-page').style.display="none"; 
@@ -414,8 +414,6 @@ function buildWaypointPage(waypointDescription) {
 			numImgs++; 
 		}
 	}
-
-	showMsgDiv.innerHTML += '<p>' + msg + '</p>'; 
 }
 var numImgs=0; 
 var current; 
