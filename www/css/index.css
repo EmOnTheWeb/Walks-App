@@ -107,8 +107,11 @@ h2 {
     margin-bottom:0px; 
     text-align:center; 
     text-transform:capitalize; 
-    background:rgba(0,0,0,0.5); 
-    color:white; 
+    background:white; 
+    color:black;  
+    border-bottom:2px solid black; 
+    line-height:1; 
+    text-decoration:underline; 
 }
 h2.waypoint-name {
     text-align:left; 
@@ -185,7 +188,15 @@ audio {
     left: 50%;
     margin-left: -150px;
 }
-
+.recenter {
+    text-align:center;
+    padding:5px 0; 
+    border-top:2px solid black;
+    border-bottom:2px solid black;
+    font-size:16px; 
+    font-weight:bold;
+    display:none;
+}
 @media all and (orientation:landscape) {
     #map {
         max-height:283px; 

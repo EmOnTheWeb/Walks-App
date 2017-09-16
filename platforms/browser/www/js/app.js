@@ -48,6 +48,8 @@ function init() { //run everything in here only when device is ready
 	    	// document.querySelector('.walk-page').style.display = 'block'; 
      		var initializedMap = generateMap(walkData); //return map to update marker on it
      		startTracking(walkData, initializedMap); 
+
+     		document.querySelector('.recenter').style.display = "block"; 
 	    }); 
   	});   	
 }
@@ -249,7 +251,8 @@ function generateMap(walkData) {
 	    center: startCoordinateArray,
 	    zoom: 15
 	});
-	document.querySelector('.loading-icon').style.display = "none"; 
+	document.querySelector('.loading-icon').style.display = "none";
+
 	//get all step intersection coordinates to plot route. more intersection coordinates means more accurate route plotting
 	var routeLegs = coordinateInfo.value.legs; 
 	var routeCoordinates = []; 
@@ -299,7 +302,7 @@ function generateMap(walkData) {
 	    });
 	});
 	//pass in the landmark descriptions to bind the click events... 
-	addWaypointsToMap(waypointCoordinates,map,walkData); 
+	addWaypointsToMap(waypointCoordinates,map,walkData);  
 
 	return map; 
 }
@@ -382,7 +385,7 @@ function buildWaypointPage(waypointDescription) {
 
 	document.querySelector('.walk-page').style.display="none"; 
 	document.querySelector('.waypoint-page').style.display="block"; 
-	
+
 	document.querySelector(".waypoint-name span").addEventListener("click", function() {
 		document.querySelector('.waypoint-page').style.display="none"; 
 		document.querySelector('.walk-page').style.display="block"; 
@@ -632,7 +635,12 @@ function isClose(currentLat, currentLng, stepLat, stepLng) {
 var firstFlyTo = true; 
 var currentMarker; 
 
+var currentLat; 
+var currentLong; 
 function updateMarkerPosition(long,lat,map) { //add marker to map 
+	
+	currentLat = lat; 
+	currentLong = long; 
 	//delete old marker before readding for new position
 	if(currentMarker) {
 		currentMarker.remove(); 
@@ -654,5 +662,11 @@ function updateMarkerPosition(long,lat,map) { //add marker to map
 	    });
 	    firstFlyTo = false; //want it to fly there first time round ... 
 	}
+
+	document.querySelector(".recenter").addEventListener("click", function() {
+		map.flyTo({
+	        center: [currentLong,currentLat]
+	    });
+	}); 
 }
 
