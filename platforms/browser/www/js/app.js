@@ -319,7 +319,10 @@ function addWaypointsToMap(waypointCoordinates,map,walkData) {
 	    // el.style.backgroundSize = 'contain'; 
 	    // el.style.backgroundColor = 'transparent'; 
 
-	    el.addEventListener('click', function() {
+	    el.addEventListener('click', function(e) {
+	    	var marker = e.target; 
+	    	marker.classList.add('filter');  
+    		
 	        var waypointDescription = getWaypointDescription(index,walkData.landmarkDescriptions);    
 	       	buildWaypointPage(waypointDescription); 
 	       	playAudio(index,walkData.walkDirections); 
