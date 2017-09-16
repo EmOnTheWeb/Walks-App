@@ -550,7 +550,13 @@ function startTracking(walkData, map) {
         				j = legSteps.length; 
         				i = journeyLegs.length; 
         			}
-        			else { console.log('not close really'); }
+        			else { console.log('not close really'); 
+
+        				//empty and close waypoint page
+        				document.querySelector('.waypoint-page').innerHTML=''; 
+        				document.querySelector('.waypoint-page').style.display="none";
+        				document.querySelector('.walk-page').style.display="block"; 	 
+        			}
 
         		}
         	} 
