@@ -299,14 +299,14 @@ function generateMap(walkData) {
 	    });
 	});
 	//pass in the landmark descriptions to bind the click events... 
-	addWaypointsToMap(waypointCoordinates,map); 
+	addWaypointsToMap(waypointCoordinates,map,walkData); 
 
 	return map; 
 }
 
-function addWaypointsToMap(waypointCoordinates,map) {
+function addWaypointsToMap(waypointCoordinates,map,walkData) {
 
-	waypointCoordinates.forEach(function(coordinates) {
+	waypointCoordinates.forEach(function(coordinates,index) {
 	    // create a DOM element for the marker
 	    var el = document.createElement('div');
 	    el.className = 'waypoint-markers'; 
@@ -317,7 +317,9 @@ function addWaypointsToMap(waypointCoordinates,map) {
 	    // el.style.backgroundColor = 'transparent'; 
 
 	    el.addEventListener('click', function() {
-	        window.alert('hi');
+	        var waypointDescription = getWaypointDescription(index,walkData.landmarkDescriptions);    
+	       	buildWaypointPage(waypointDescription); 
+	       	playAudio(index,walkData.walkDirections); 
 	    });
 
 	    // add marker to map
@@ -358,17 +360,24 @@ function imageExists(imageUrl) {
 
     return http.status != 404;
 }
-function buildWaypointPage(waypointDescription) {
-	
-	var msg = waypointDescription.description; 
-	var showMsgDiv = document.querySelector(".waypoint-text");
-
+function clearWaypointPage() {
 	//clear up waypoint page before showing
 	showMsgDiv.innerHTML = ''; 
 	var slider = document.querySelector('.slider'); 
 	if(slider) { 
 		slider.parentNode.removeChild(slider); 
 	}
+	var audio = document.querySelector('audio'); 
+	if(audio) {
+		audio.parentNode.removeChild(audio); 
+	}
+}
+function buildWaypointPage(waypointDescription) {
+	
+	var msg = waypointDescription.description; 
+	var showMsgDiv = document.querySelector(".waypoint-text");
+	clearWaypointPage(); 
+	
 	document.querySelector('.walk-page').style.display="none"; 
 	document.querySelector('.waypoint-page').style.display="block"; 
 
@@ -425,6 +434,23 @@ document.querySelector('.waypoint-page').addEventListener('click',function(e) {
 		next.className += ' showing'; 
 	}
 }); 
+function playAudio(i,walkDirections) {
+	var audioNum = i+1; 
+	var audioDirectoryName = walkDirections.key;
+
+	audioDirectoryName = audioDirectoryName.trim().replace(/\s/g,'_'); 
+
+	//play audio 
+	var audioElement = document.createElement('audio');  
+		audioElement.setAttribute('controls','controls'); 
+	  audioElement.setAttribute('src', 'http://api-walks.emiliedannenberg.co.uk/waypoint-audio/' + audioDirectoryName + '/' + 'waypoint_' + audioNum + '.mp3');  
+	  audioElement.addEventListener("load", function(){  
+	      audioElement.play();  
+	  }, true);
+
+	audioElement.play(); 
+	document.querySelector('.waypoint-page').appendChild(audioElement);
+}
 function startTracking(walkData, map) {
 	// var time = 0; 
 	console.log(walkData); 
@@ -477,24 +503,8 @@ function startTracking(walkData, map) {
 	        					buildWaypointPage(waypointDescription); 
 	 			 				
 	 			 				waypointsReached.waypoint.push(i); 
-	        					
-	 			 				navigator.vibrate(2000);
-
-	        					var audioNum = i+1; 
-	        					var audioDirectoryName = walkData.walkDirections.key;
-	     
-	        					audioDirectoryName = audioDirectoryName.trim().replace(/\s/g,'_'); 
-
-	        					//play audio 
-	        					var audioElement = document.createElement('audio');  
-	        						audioElement.setAttribute('controls','controls'); 
-								  audioElement.setAttribute('src', 'http://api-walks.emiliedannenberg.co.uk/waypoint-audio/' + audioDirectoryName + '/' + 'waypoint_' + audioNum + '.mp3');  
-								  audioElement.addEventListener("load", function(){  
-								      audioElement.play();  
-								  }, true);
-
-								audioElement.play(); 
-								document.querySelector('.waypoint-page').appendChild(audioElement); 	
+	        					playAudio(i,walkData.walkDirections); 
+	 			 				// navigator.vibrate(2000); 	
         				} 
         				else if(currentStep.type==="arrive" && atEnd(stepLat, stepLng, coordinateData.end) && !waypointsReached.end) { // you're at the end
   
@@ -509,7 +519,7 @@ function startTracking(walkData, map) {
         				}
         				else if(atBeginning(stepLat, stepLng, coordinateData.beginning) && !waypointsReached.start) {
         				 	    					 
-	        					navigator.vibrate(2000);
+	        					// navigator.vibrate(2000);
 
 	        					var instruction = currentStep.instruction; 
 	        					
