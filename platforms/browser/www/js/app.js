@@ -379,23 +379,46 @@ function buildWaypointPage(waypointDescription) {
 	for(var i=0; i<5 ; i++) { //fetch up to five images
 	
 		var src = 'http://api-walks.emiliedannenberg.co.uk/landmark_descriptions/images/' + fileName + '_' + (i+1) + '.png';  
-		
-		if(imageExists(src)) {
 			
+		if(imageExists(src)) {
+			if(i === 0) {
+				var d = document.createElement('div'); 
+				d.className = 'slider'; 
+				var textElem = document.querySelector('.waypoint-text');
+				var page = document.querySelector('.waypoint-page'); 
+				page.insertBefore(d,textElem);  	
+			}
 			var img = new Image(); 
 			img.src = src; 
 			img.className = 'waypoint-img'; 
-
-			var textElem = document.querySelector('.waypoint-text'); 
-			console.log(img); 
-			var page = document.querySelector('.waypoint-page'); 
-
-			page.insertBefore(img, textElem); 
+			if(i === 0) { 
+				img.className += ' showing'; 
+				current = 1; //on the first image
+			}
+			d.appendChild(img);	
+			numImgs++; 
 		}
 	}
 
 	showMsgDiv.innerHTML += '<p>' + msg + '</p>'; 
 }
+var numImgs=0; 
+var current; 
+document.querySelector('.waypoint-page').addEventListener('click',function(e) {
+	if(e.target && e.target.matches('.waypoint-img')) {
+		var currentElem = document.querySelector('.showing'); 
+		if(current === numImgs) {
+			var next = document.querySelector('.slider').firstChild; 
+			current = 1; //back to start
+		}
+		else {		
+			var next = currentElem.nextSibling; 
+			current++; 		
+		}
+		currentElem.classList.remove('showing'); 
+		next.className += ' showing'; 
+	}
+}); 
 function startTracking(walkData, map) {
 	// var time = 0; 
 	console.log(walkData); 

@@ -156,8 +156,26 @@ h2.waypoint-name span {
 .waypoint-text {
     padding:10px; 
 }
-.waypoint-page .waypoint-img {
-    width:90%;
+.waypoint-img {
+    position:absolute; 
+    left:10px; 
+    right:10px;  
+    top:10px; 
+    bottom:0px; 
+    z-index:1; 
+    opacity:0; 
+    transition:opacity 1s ease-in-out; 
+    height:220px; 
+    width:calc(100% - 20px);
+}
+.slider {
+    position:relative; 
+    width:100%;
+    height:220px; 
+}
+.showing {
+    z-index:2;
+    opacity:1;  
 }
 audio {
     position: fixed;
