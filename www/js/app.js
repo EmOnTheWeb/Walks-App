@@ -350,6 +350,14 @@ var waypointsReached = {  //object to track whether you've already hit a waypoin
 	waypoint: [],
 	steps: []
 }
+function imageExists(imageUrl) {
+	var http = new XMLHttpRequest();
+
+    http.open('HEAD', imageUrl, false);
+    http.send();
+
+    return http.status != 404;
+}
 function buildWaypointPage(waypointDescription) {
 	var msg = waypointDescription.description; 
 	document.querySelector('.walk-page').style.display="none"; 
@@ -364,22 +372,26 @@ function buildWaypointPage(waypointDescription) {
 	}); 
 
 	var showMsgDiv = document.querySelector(".waypoint-text");
+	showMsgDiv.innerHTML = ''; 
 
 	var fileName = waypointDescription.name.toLowerCase().replace(/\s/g,'_'); 
-	for(var i=0; i<5 ; i++) {
-		(function(different) {
-			src = 'http://api-walks.emiliedannenberg.co.uk/landmark_descriptions/images/' + fileName + '_' + (different+1) + '.png';  
-		
-			var img = new Image();
 
-			img.onload = function() {
-			   console.log('a success with url' + src);  
-			};
-		  	img.onerror = function() {
-		    	console.error(src); 
-		  	};
-		  	img.src = src; // fires off loading of image
-		})(i); 
+	for(var i=0; i<5 ; i++) { //fetch up to five images
+	
+		var src = 'http://api-walks.emiliedannenberg.co.uk/landmark_descriptions/images/' + fileName + '_' + (i+1) + '.png';  
+		
+		if(imageExists(src)) {
+			
+			var img = new Image(); 
+			img.src = src; 
+			img.className = 'waypoint-img'; 
+
+			var textElem = document.querySelector('.waypoint-text'); 
+			console.log(img); 
+			var page = document.querySelector('.waypoint-page'); 
+
+			page.insertBefore(img, textElem); 
+		}
 	}
 
 	showMsgDiv.innerHTML += '<p>' + msg + '</p>'; 
