@@ -398,7 +398,7 @@ function buildWaypointPage(waypointDescription) {
 
 	var fileName = waypointDescription.name.toLowerCase().replace(/\s/g,'_'); 
 
-	for(var i=0; i<3 ; i++) { //three images
+	for(var i=0; i<2 ; i++) { //three images
 	
 		var src = 'http://api-walks.emiliedannenberg.co.uk/landmark_descriptions/images/' + fileName + '_' + (i+1) + '.png';  
 			
@@ -412,14 +412,13 @@ function buildWaypointPage(waypointDescription) {
 		img.className = 'waypoint-img'; 
 		if(i === 0) { 
 			img.className += ' showing'; 
-			current = 1; //on the first image
 		}
 		d.appendChild(img);	
 		numImgs++; 
 	}
 }
 var numImgs=0; 
-var current; 
+var current=1; 
 document.querySelector('.waypoint-page').addEventListener('click',function(e) {
 	if(e.target && e.target.matches('.waypoint-img')) {
 		var currentElem = document.querySelector('.showing'); 
