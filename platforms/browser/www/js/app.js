@@ -358,14 +358,14 @@ var waypointsReached = {  //object to track whether you've already hit a waypoin
 	waypoint: [],
 	steps: []
 }
-function imageExists(imageUrl) {
-	var http = new XMLHttpRequest();
+// function imageExists(imageUrl) {
+// 	var http = new XMLHttpRequest();
 
-    http.open('HEAD', imageUrl, false);
-    http.send();
+//     http.open('HEAD', imageUrl, false);
+//     http.send();
 
-    return http.status != 404;
-}
+//     return http.status != 404;
+// }
 function clearWaypointPage() {
 	//clear up waypoint page before showing
 	var slider = document.querySelector('.slider'); 
@@ -380,45 +380,43 @@ function clearWaypointPage() {
 function buildWaypointPage(waypointDescription) {
 	
 	var msg = waypointDescription.description; 
-	var showMsgDiv = document.querySelector(".waypoint-text");
+	var textElem = document.querySelector(".waypoint-text");
 	document.querySelector(".waypoint-name").innerHTML = waypointDescription.name + '<span>&#8617;</span>'; 
-	showMsgDiv.innerHTML = '<p>' + msg + '</p>'; 
+	textElem.innerHTML = '<p>' + msg + '</p>'; 
 
 	clearWaypointPage(); 
 
-	document.querySelector('.walk-page').style.display="none"; 
-	document.querySelector('.waypoint-page').style.display="block"; 
+	var walkPage = document.querySelector('.walk-page');
+	var waypointPage = document.querySelector('.waypoint-page');  
+	walkPage.style.display="none"; 
+	waypointPage.style.display="block"; 
 
 	document.querySelector(".waypoint-name span").addEventListener("click", function() {
-		document.querySelector('.waypoint-page').style.display="none"; 
-		document.querySelector('.walk-page').style.display="block"; 
+		waypointPage.style.display="none"; 
+		walkPage.style.display="block"; 
 		document.querySelector('audio').pause(); 
 	}); 
 
 	var fileName = waypointDescription.name.toLowerCase().replace(/\s/g,'_'); 
 
-	for(var i=0; i<5 ; i++) { //fetch up to five images
+	for(var i=0; i<3 ; i++) { //three images
 	
 		var src = 'http://api-walks.emiliedannenberg.co.uk/landmark_descriptions/images/' + fileName + '_' + (i+1) + '.png';  
 			
-		if(imageExists(src)) {
-			if(i === 0) {
-				var d = document.createElement('div'); 
-				d.className = 'slider'; 
-				var textElem = document.querySelector('.waypoint-text');
-				var page = document.querySelector('.waypoint-page'); 
-				page.insertBefore(d,textElem);  	
-			}
-			var img = new Image(); 
-			img.src = src; 
-			img.className = 'waypoint-img'; 
-			if(i === 0) { 
-				img.className += ' showing'; 
-				current = 1; //on the first image
-			}
-			d.appendChild(img);	
-			numImgs++; 
+		if(i === 0) {
+			var d = document.createElement('div'); 
+			d.className = 'slider'; 
+			waypointPage.insertBefore(d,textElem);  	
 		}
+		var img = new Image(); 
+		img.src = src; 
+		img.className = 'waypoint-img'; 
+		if(i === 0) { 
+			img.className += ' showing'; 
+			current = 1; //on the first image
+		}
+		d.appendChild(img);	
+		numImgs++; 
 	}
 }
 var numImgs=0; 
