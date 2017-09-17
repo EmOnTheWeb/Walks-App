@@ -320,9 +320,8 @@ function addWaypointsToMap(waypointCoordinates,map,walkData) {
 	    // el.style.backgroundColor = 'transparent'; 
 
 	    el.addEventListener('click', function(e) {
-	    	var marker = e.target; 
-	    	marker.classList.add('filter');  
-    		
+	    	// var marker = e.target; 
+	    	// marker.classList.add('filter');  		
 	        var waypointDescription = getWaypointDescription(index,walkData.landmarkDescriptions);    
 	       	buildWaypointPage(waypointDescription); 
 	       	playAudio(index,walkData.walkDirections); 
