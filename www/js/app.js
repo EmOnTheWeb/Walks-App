@@ -398,6 +398,9 @@ function buildWaypointPage(waypointDescription) {
 
 	var fileName = waypointDescription.name.toLowerCase().replace(/\s/g,'_'); 
 
+	numImgs = 0; //reset these vars every time you build a page!!!
+	current = 1; 
+
 	for(var i=0; i<2; i++) { //three images
 	
 		var src = 'http://api-walks.emiliedannenberg.co.uk/landmark_descriptions/images/' + fileName + '_' + (i+1) + '.png';  
@@ -417,8 +420,7 @@ function buildWaypointPage(waypointDescription) {
 		numImgs++; 
 	}
 }
-var numImgs=0; 
-var current=1; 
+var numImgs; var current; 
 document.querySelector('.waypoint-page').addEventListener('click',function(e) {
 
 	if(e.target && e.target.matches('.waypoint-img')) {
