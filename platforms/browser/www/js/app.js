@@ -66,9 +66,9 @@ var promisedLandmarkDescriptions = function(walkDirections) {
     	
     	if(selectedValue !== '') {
    			var walkName = select.options[select.selectedIndex].text;
-   // 			storage.keys(function(key) {
-			// 	this.remove(walkName+'-landmarks'); 
-			// })  
+   			storage.keys(function(key) {
+				this.remove(walkName+'-landmarks'); 
+			})  
 
    			storage.get(walkName + '-landmarks', function(landmarkDescriptions) {
 
@@ -145,9 +145,9 @@ function getWalkDirections(resolve, reject) {
    		var walkName = select.options[select.selectedIndex].text; 
 
    		addWalkHeading(walkName); 
-   // 			storage.keys(function(key) {
-			// 	this.remove(walkName); 
-			// })  
+   			storage.keys(function(key) {
+				this.remove(walkName); 
+			})  
    		storage.get(walkName, function(walkDirections) {
    			if(walkDirections) {
    				resolve(walkDirections); 
@@ -175,18 +175,22 @@ function getWalkDirections(resolve, reject) {
 }
 function saveWalk(resolve, directions) {
 	
-	directions = JSON.parse(directions); 
-	var route = directions.routes[0]; 
+	directions = JSON.parse(directions);
+	var turnByTurn = directions['turn-by-turn']; 
+	var waypointsOnly = directions['waypoint-coordinates'];  
+
+	turnByTurn = JSON.parse(turnByTurn); 
+	var route = turnByTurn.routes[0]; 
 	var legs = route.legs; //a leg is a route between two waypoints 	
 
 	var select = document.querySelector(".choose-walk");  
 	var walkName = select.options[select.selectedIndex].text; 
 
 	//walk start and end coordinates
-	var startCoordinate = directions.waypoints[0].location.join(); 
-	var endCoordinate = directions.waypoints[directions.waypoints.length-1].location.join(); 
+	var startCoordinate = turnByTurn.waypoints[0].location.join(); 
+	var endCoordinate = turnByTurn.waypoints[turnByTurn.waypoints.length-1].location.join(); 
 
-	var legs = directions.routes[0].legs; 
+	var legs = turnByTurn.routes[0].legs; 
 
 	for(var i=0; i<legs.length; i++) {
 		//remove properties you don't need 
@@ -229,7 +233,8 @@ function saveWalk(resolve, directions) {
 				   value : {
 				   		beginning: startCoordinate,
 				   		end : endCoordinate,
-				   		legs : legs
+				   		legs : legs,
+				   		waypoints : waypointsOnly
 				   }
 				}); 	
   }
@@ -396,12 +401,12 @@ function buildWaypointPage(waypointDescription) {
 		document.querySelector('audio').pause(); 
 	}); 
 
-	var fileName = waypointDescription.name.toLowerCase().replace(/\s/g,'_'); 
+	var fileName = waypointDescription.name.toLowerCase().replace(/\s/g,'_').replace(/\'/g,''); 
 
 	numImgs = 0; //reset these vars every time you build a page!!!
 	current = 1; 
 
-	for(var i=0; i<2; i++) { //three images
+	for(var i=0; i<2; i++) { //two images
 	
 		var src = 'http://api-walks.emiliedannenberg.co.uk/landmark_descriptions/images/' + fileName + '_' + (i+1) + '.png';  
 				
@@ -475,7 +480,7 @@ function startTracking(walkData, map) {
 
         	coordinateData = walkData.walkDirections.value; 
         	journeyLegs = coordinateData.legs; 
-        	
+     
         	for(var i =0; i < journeyLegs.length; i++) {
         		
         		var currentLeg = journeyLegs[i]; 
@@ -491,14 +496,13 @@ function startTracking(walkData, map) {
 
         			stepLat = stepLocation[1]; 
         			stepLng = stepLocation[0]; 
-        		
-        			//compare geoposition to step position 
+ 
         			if(isClose(currentLat, currentLng, stepLat, stepLng)) {
         				// var speak = new SpeechSynthesisUtterance();//ur gunna say something!!
-
+        			
         				//if step type is arrive you're at a waypoint, get waypoint info	
         				if(currentStep.type==="arrive" && !atEnd(stepLat, stepLng, coordinateData.end) && waypointsReached.waypoint.indexOf(i) === -1) {
-        			
+        						 
 	        					//get waypoint info. 
 	        					console.log('you are at a waypoint');
 	        					//get leg, get corresponding waypoint info index
@@ -521,50 +525,11 @@ function startTracking(walkData, map) {
 	        		
         				}
         				else if(atBeginning(stepLat, stepLng, coordinateData.beginning) && !waypointsReached.start) {
-        				 	    					 
-	        					// navigator.vibrate(2000);
+        				 	console.log('at the beginning'); 	    					
 
-	        					// var instruction = currentStep.instruction; 
-	        					
-	        					// VoiceRSS.speech({
-						        //     key: '2cc66f53dd044ef486e9653c840c14e5 ',
-						        //     src: instruction,
-						        //     hl: 'en-gb',
-						        //     r: 0, 
-						        //     c: 'mp3',
-						        //     f: '44khz_16bit_stereo',
-						        //     ssml: false
-					        	// });    
-	        			
-	        					// showMsgDiv.innerHTML += '<p>' + instruction + '</p>'; 
-
-	        					waypointsReached.start = true; 
-	        					waypointsReached.steps.push(i+j); 
-        
-        				}	
-        				else if(waypointsReached.steps.indexOf(i+j) === -1) {	 // get instruction 
-        					if(currentStep.type !== "arrive") { //don't let it read out useless 'you have arrived' instruction
-	        					var instruction = currentStep.instruction; 
-	        					//read this out 
-	        					var msg = instruction;
-
-	        					// showMsgDiv.innerHTML += '<p>' + msg + '</p>';
-
-	        					// VoiceRSS.speech({
-						        //     key: '2cc66f53dd044ef486e9653c840c14e5 ',
-						        //     src: msg,
-						        //     hl: 'en-gb',
-						        //     r: 0, 
-						        //     c: 'mp3',
-						        //     f: '44khz_16bit_stereo',
-						        //     ssml: false
-						        // });
-	        					
-	        					waypointsReached.steps.push(i + j); 
-	        				} 
+        					waypointsReached.start = true; 
+        					waypointsReached.steps.push(i+j); 
         				}
-        				//say your thang
-        				// window.speechSynthesis.speak(speak);
         				//now break out of everything
         				j = legSteps.length; 
         				i = journeyLegs.length; 
@@ -575,7 +540,6 @@ function startTracking(walkData, map) {
         				// document.querySelector('.waypoint-page').style.display="none";
         				// document.querySelector('.walk-page').style.display="block"; 	 
         			}
-
         		}
         	} 
         },
