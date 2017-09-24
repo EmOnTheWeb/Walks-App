@@ -398,10 +398,10 @@ function buildWaypointPage(waypointDescription) {
 
 	var fileName = waypointDescription.name.toLowerCase().replace(/\s/g,'_'); 
 
-	for(var i=0; i<2 ; i++) { //three images
+	for(var i=0; i<2; i++) { //three images
 	
 		var src = 'http://api-walks.emiliedannenberg.co.uk/landmark_descriptions/images/' + fileName + '_' + (i+1) + '.png';  
-			
+				
 		if(i === 0) {
 			var d = document.createElement('div'); 
 			d.className = 'slider'; 
@@ -420,6 +420,7 @@ function buildWaypointPage(waypointDescription) {
 var numImgs=0; 
 var current=1; 
 document.querySelector('.waypoint-page').addEventListener('click',function(e) {
+
 	if(e.target && e.target.matches('.waypoint-img')) {
 		var currentElem = document.querySelector('.showing'); 
 		if(current === numImgs) {
@@ -511,7 +512,7 @@ function startTracking(walkData, map) {
 	        					// speak.text = 'walk finished'; 
 	        					var msg = 'walk finished'; 
 
-	        					showMsgDiv.innerHTML += '<p>' + msg + '</p>'; 
+	        					// showMsgDiv.innerHTML += '<p>' + msg + '</p>'; 
 
 	        					waypointsReached.end = true;
 	        					waypointsReached.steps.push(i+j);  
@@ -521,19 +522,19 @@ function startTracking(walkData, map) {
         				 	    					 
 	        					// navigator.vibrate(2000);
 
-	        					var instruction = currentStep.instruction; 
+	        					// var instruction = currentStep.instruction; 
 	        					
-	        					VoiceRSS.speech({
-						            key: '2cc66f53dd044ef486e9653c840c14e5 ',
-						            src: instruction,
-						            hl: 'en-gb',
-						            r: 0, 
-						            c: 'mp3',
-						            f: '44khz_16bit_stereo',
-						            ssml: false
-					        	});    
+	        					// VoiceRSS.speech({
+						        //     key: '2cc66f53dd044ef486e9653c840c14e5 ',
+						        //     src: instruction,
+						        //     hl: 'en-gb',
+						        //     r: 0, 
+						        //     c: 'mp3',
+						        //     f: '44khz_16bit_stereo',
+						        //     ssml: false
+					        	// });    
 	        			
-	        					showMsgDiv.innerHTML += '<p>' + instruction + '</p>'; 
+	        					// showMsgDiv.innerHTML += '<p>' + instruction + '</p>'; 
 
 	        					waypointsReached.start = true; 
 	        					waypointsReached.steps.push(i+j); 
@@ -545,17 +546,17 @@ function startTracking(walkData, map) {
 	        					//read this out 
 	        					var msg = instruction;
 
-	        					showMsgDiv.innerHTML += '<p>' + msg + '</p>';
+	        					// showMsgDiv.innerHTML += '<p>' + msg + '</p>';
 
-	        					VoiceRSS.speech({
-						            key: '2cc66f53dd044ef486e9653c840c14e5 ',
-						            src: msg,
-						            hl: 'en-gb',
-						            r: 0, 
-						            c: 'mp3',
-						            f: '44khz_16bit_stereo',
-						            ssml: false
-						        });
+	        					// VoiceRSS.speech({
+						        //     key: '2cc66f53dd044ef486e9653c840c14e5 ',
+						        //     src: msg,
+						        //     hl: 'en-gb',
+						        //     r: 0, 
+						        //     c: 'mp3',
+						        //     f: '44khz_16bit_stereo',
+						        //     ssml: false
+						        // });
 	        					
 	        					waypointsReached.steps.push(i + j); 
 	        				} 
