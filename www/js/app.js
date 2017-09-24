@@ -497,7 +497,7 @@ function startTracking(walkData, map) {
         			stepLat = stepLocation[1]; 
         			stepLng = stepLocation[0]; 
  
-        			if(isClose(currentLat, currentLng, stepLat, stepLng)) {
+        			if(isClose(currentLat, currentLng, stepLat, stepLng) && (currentStep.type==="arrive" || atBeginning(stepLat, stepLng, coordinateData.beginning))) {
         				// var speak = new SpeechSynthesisUtterance();//ur gunna say something!!
         			
         				//if step type is arrive you're at a waypoint, get waypoint info	
