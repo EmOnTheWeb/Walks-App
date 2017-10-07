@@ -251,13 +251,28 @@ function generateMap(walkData) {
 	startCoordinateString = coordinateInfo.value.beginning; 
 	startCoordinateArray = startCoordinateString.split(','); //get it into its proper format
 
-	mapboxgl.accessToken = 'pk.eyJ1IjoiZW1pbGllZGFubmVuYmVyZyIsImEiOiJjaXhmOTB6ZnowMDAwMnVzaDVkcnpsY2M1In0.33yDwUq670jHD8flKjzqxg';
-	var map = new mapboxgl.Map({
-	    container: 'map',
-	    style: 'mapbox://styles/mapbox/streets-v9',
-	    center: startCoordinateArray,
-	    zoom: 15
-	});
+	var mapKey = walkData.walkDirections.key + '-map';
+	var map; 
+	storage.get(mapKey, function(savedMap) {
+		if(!savedMap) {
+			mapboxgl.accessToken = 'pk.eyJ1IjoiZW1pbGllZGFubmVuYmVyZyIsImEiOiJjaXhmOTB6ZnowMDAwMnVzaDVkcnpsY2M1In0.33yDwUq670jHD8flKjzqxg';
+			map = new mapboxgl.Map({
+			    container: 'map',
+			    style: 'mapbox://styles/mapbox/streets-v9',
+			    center: startCoordinateArray,
+			    zoom: 15
+			});
+			 
+			storage.save({ key : mapKey, 
+						   value : map
+						}, function(doc){	
+				console.log('map saved locally'); 
+			});
+		} 
+		else {
+			map = savedMap; 
+		}
+	}); 
 	document.querySelector('.loading-icon').style.display = "none";
 
 	//get all step intersection coordinates to plot route. more intersection coordinates means more accurate route plotting
