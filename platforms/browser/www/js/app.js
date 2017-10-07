@@ -150,7 +150,8 @@ function getWalkDirections(resolve, reject) {
 			// })  
    		storage.get(walkName, function(walkDirections) {
    			if(walkDirections) {
-   				alert(walkDirections); 
+   				var walkPage = document.querySelector('.walk-page');
+   				walkPage.append(walkDirections); 
    				resolve(walkDirections); 
    			} else {
 			    requestUri = 'http://api-walks.emiliedannenberg.co.uk/get-directions/'+selectedValue; 
