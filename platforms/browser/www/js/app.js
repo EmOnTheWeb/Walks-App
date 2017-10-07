@@ -151,11 +151,11 @@ function getWalkDirections(resolve, reject) {
 				var walkPage = document.querySelector('.walk-page');
    		storage.get(walkName, function(walkDirections) {
    			if(walkDirections) {
-   				walkPage.append('there is local storage'); 
+   				// walkPage.append('there is local storage'); 
    				resolve(walkDirections); 
    			} else {
 			    requestUri = 'http://api-walks.emiliedannenberg.co.uk/get-directions/'+selectedValue; 
-			    walkPage.append('made a new request'); 
+			    // walkPage.append('made a new request'); 
 				var xhr = new XMLHttpRequest();
 				    
 				xhr.open('GET',requestUri, true);
