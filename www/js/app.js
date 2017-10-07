@@ -2,7 +2,7 @@ window.onload = function() {
     document.addEventListener("deviceready", init, false);
 }
 
-storage = Lawnchair({name: 'walk-information'}, function(e) {
+storage = Lawnchair({name: 'walk-information', adapter: 'dom'}, function(e) {
 	console.log('storage initialized'); 
 })
 
